@@ -7,22 +7,47 @@ import DeepDivePanel from "@/components/dashboard/DeepDivePanel";
 import JiraModal from "@/components/dashboard/JiraModal";
 import type { Issue } from "@/components/dashboard/TriageTable";
 
-const issues: Issue[] = [
+const defaultIssues: Issue[] = [
   { id: 1, name: "iOS 17 UPI Biometric Freeze & Core App Crashes", risk: "₹54,68,400", riskRaw: 5468400, vol: 24, status: "Critical", trend: "up", traffic: "45,000", drop: "-1.4%", aov: "₹1,200", quotes: ["App crashes when opening cart with 10+ items", "Search results not sorted properly."] },
   { id: 2, name: "Order and Payment Issues", risk: "₹44,77,880", riskRaw: 4477880, vol: 13, status: "High", trend: "up", traffic: "32,000", drop: "-1.1%", aov: "₹1,200", quotes: ["Payment failed but charged twice.", "Refund initiated but money not received."] },
   { id: 3, name: "Deprioritized Noise: Design and Visual Issues", risk: "₹0", riskRaw: 0, vol: 35, status: "Muted", trend: "flat", traffic: "50,000", drop: "0.0%", aov: "₹500", quotes: ["Homepage colors bilkul bakwas.", "Colors absolutely terrible."] },
 ];
 
+const WEBHOOK_URL = "https://pristine-liane-noncontemplatively.ngrok-free.app/webhook/triage-manual";
+
 const Index = () => {
+  const [issues, setIssues] = useState<Issue[]>(defaultIssues);
   const [isFetching, setIsFetching] = useState(false);
-  const [selectedIssue, setSelectedIssue] = useState<Issue>(issues[0]);
+  const [selectedIssue, setSelectedIssue] = useState<Issue>(defaultIssues[0]);
   const [activeTab, setActiveTab] = useState("Correlation Overview");
   const [isJiraModalOpen, setIsJiraModalOpen] = useState(false);
   const [sidebarItem, setSidebarItem] = useState("dashboard");
 
-  const handleFetch = () => {
+  const handleFetch = async () => {
     setIsFetching(true);
-    setTimeout(() => setIsFetching(false), 2000);
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIssues(data);
+        if (data.length > 0) {
+          setSelectedIssue(data[0]);
+        }
+      } else {
+        console.error("Webhook failed with status:", response.status);
+      }
+    } catch (error) {
+      console.error("Connection error:", error);
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   return (
