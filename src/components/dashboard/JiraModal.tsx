@@ -74,7 +74,7 @@ const JiraModal = ({ issue, isOpen, onClose }: JiraModalProps) => {
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Description</label>
                 <textarea
-                  rows={4}
+                  rows={8}
                   defaultValue={`Revenue Impact: ${issue.risk}/week\nTraffic: ${issue.traffic} | Conv Drop: ${issue.drop} | AOV: ${issue.aov}\n\nCustomer Quotes:\n${issue.quotes.map((q) => `- "${q}"`).join("\n")}`}
                   className="mt-1 w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring font-mono"
                 />
