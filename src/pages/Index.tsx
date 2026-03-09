@@ -74,37 +74,30 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleFetchData = async () => {
-    setIsFetching(true); 
-    console.log("1. Starting API call...");
+    setIsFetching(true);
 
     try {
-      const webhookUrl = 'https://pristine-liane-noncontemplatively.ngrok-free.dev/webhook-test/triage-manual';
-      console.log("2. Hitting URL:", webhookUrl);
-
-      const response = await fetch(webhookUrl, {
+      const response = await fetch('https://pristine-liane-noncontemplatively.ngrok-free.app/webhook-test/triage-manual', {
         method: 'POST',
         headers: {
-          'Content-Type': 'text/plain',
-          'ngrok-skip-browser-warning': 'true' 
-        },
-        body: JSON.stringify({ action: "fetch_triage" })
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
       });
-
-      console.log("3. Response status:", response.status);
 
       if (!response.ok) {
         throw new Error(`API failed with status: ${response.status}`);
       }
 
       const liveData = await response.json();
-      console.log("4. SUCCESS!", liveData);
+      console.log("Success from n8n!", liveData);
 
-      setIssues(liveData); 
+      setIssues(liveData);
 
     } catch (error) {
-      console.error("❌ CRITICAL ERROR:", error);
+      console.error("Connection error details:", error);
     } finally {
-      setIsFetching(false); 
+      setIsFetching(false);
     }
   };
 
