@@ -23,7 +23,7 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCo
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
-const AppSidebar = ({ activeItem, onItemClick }: SidebarProps) => {
+return (
   return (
     <aside className="w-60 min-h-screen bg-squid-ink flex flex-col shrink-0">
       {/* Logo */}
