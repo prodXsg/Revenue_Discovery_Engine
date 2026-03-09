@@ -97,13 +97,11 @@ const Index = () => {
                 onCreateJira={() => setIsJiraModalOpen(true)}
               />
             </>
-          ) : (
-            <div className="flex items-center justify-center h-64">
-              <p className="text-muted-foreground text-sm">
-                {sidebarItem === "integrations" ? "Integrations" : "Settings"} — Coming Soon
-              </p>
-            </div>
-          )}
+          ) : sidebarItem === "integrations" ? (
+            <IntegrationsPage />
+          ) : sidebarItem === "settings" ? (
+            <SettingsPage />
+          ) : null}
         </main>
       </div>
 
