@@ -24,7 +24,7 @@ const JiraModal = ({ issue, isOpen, onClose }: JiraModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-card rounded border border-border shadow-lg w-full max-w-lg mx-4">
+      <div className="relative bg-card rounded border border-border shadow-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         {pushed ? (
           <div className="flex flex-col items-center justify-center py-16 px-6">
             <CheckCircle2 size={48} className="text-success-green mb-4" />
