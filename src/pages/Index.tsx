@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import AppSidebar from "@/components/dashboard/AppSidebar";
 import Header from "@/components/dashboard/Header";
 import KPICards from "@/components/dashboard/KPICards";
@@ -57,6 +58,12 @@ const defaultIssues: Issue[] = [
 
 const WEBHOOK_URL = "https://pristine-liane-noncontemplatively.ngrok-free.app/webhook/triage-manual";
 
+const pageVariants = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.15, ease: "easeIn" } },
+};
+
 const Index = () => {
   const [issues, setIssues] = useState<Issue[]>(defaultIssues);
   const [isFetching, setIsFetching] = useState(false);
@@ -110,6 +117,22 @@ const Index = () => {
 
   const showDashboard = sidebarItem === "dashboard" || sidebarItem === "active-risks" || sidebarItem === "muted-noise";
 
+  const renderContent = () => {
+    if (showDashboard) {
+      return (
+        <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="space-y-5">
+          {sidebarItem === "dashboard" && <KPICards />}
+          <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
+          <DeepDivePanel issue={selectedIssue} activeTab={activeTab} onTabChange={setActiveTab} onCreateJira={() => setIsJiraModalOpen(true)} />
+        </motion.div>
+      );
+    }
+    if (sidebarItem === "settings") return <motion.div key="settings" variants={pageVariants} initial="initial" animate="animate" exit="exit"><SettingsPage /></motion.div>;
+    if (sidebarItem === "integrations") return <motion.div key="integrations" variants={pageVariants} initial="initial" animate="animate" exit="exit"><IntegrationsPage /></motion.div>;
+    if (sidebarItem === "reports") return <motion.div key="reports" variants={pageVariants} initial="initial" animate="animate" exit="exit"><ReportsPage /></motion.div>;
+    return null;
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       <AppSidebar activeItem={sidebarItem} onItemClick={handleSidebarClick} activeRiskCount={activeCount} mutedNoiseCount={mutedCount} />
@@ -117,20 +140,10 @@ const Index = () => {
       <div className="flex-1 flex flex-col min-w-0">
         <Header isFetching={isFetching} onFetch={handleFetch} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-        <main className="flex-1 p-6 space-y-5 overflow-auto">
-          {showDashboard ? (
-            <>
-              {sidebarItem === "dashboard" && <KPICards />}
-              <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
-              <DeepDivePanel issue={selectedIssue} activeTab={activeTab} onTabChange={setActiveTab} onCreateJira={() => setIsJiraModalOpen(true)} />
-            </>
-          ) : sidebarItem === "settings" ? (
-            <SettingsPage />
-          ) : sidebarItem === "integrations" ? (
-            <IntegrationsPage />
-          ) : sidebarItem === "reports" ? (
-            <ReportsPage />
-          ) : null}
+        <main className="flex-1 p-6 overflow-auto">
+          <AnimatePresence mode="wait">
+            {renderContent()}
+          </AnimatePresence>
         </main>
       </div>
 
