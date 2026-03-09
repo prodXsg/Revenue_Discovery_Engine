@@ -56,7 +56,7 @@ const defaultIssues: Issue[] = [
   },
 ];
 
-const WEBHOOK_URL = "https://pristine-liane-noncontemplatively.ngrok-free.app/webhook/triage-manual";
+const WEBHOOK_URL = "https://pristine-liane-noncontemplatively.ngrok-free.app/webhook-test/triage-manual";
 
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
