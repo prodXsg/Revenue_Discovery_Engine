@@ -150,7 +150,7 @@ const Index = () => {
       <AppSidebar activeItem={sidebarItem} onItemClick={handleSidebarClick} activeRiskCount={activeCount} mutedNoiseCount={mutedCount} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header isFetching={isFetching} onFetch={handleFetch} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <Header isFetching={isFetching} onFetch={handleFetchData} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
         <main className="flex-1 p-6 overflow-auto">
           <AnimatePresence mode="wait">
