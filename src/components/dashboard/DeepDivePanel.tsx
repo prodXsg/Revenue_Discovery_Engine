@@ -119,12 +119,24 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira }: DeepDive
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-amazon-orange/10 text-amazon-orange font-semibold">AI Generated</span>
                   <span className="text-[10px] text-muted-foreground">Confidence: High</span>
                 </div>
-                <button
-                  onClick={onCreateJira}
-                  className="py-2.5 px-5 rounded bg-squid-ink text-secondary-foreground font-semibold text-sm hover:bg-squid-ink-light transition-colors"
-                >
-                  Generate Jira Epic
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={onCreateJira}
+                    className="py-2.5 px-5 rounded bg-squid-ink text-secondary-foreground font-semibold text-sm hover:bg-squid-ink-light transition-colors"
+                  >
+                    Generate Jira Epic
+                  </button>
+                  <button
+                    onClick={() => {
+                      import("sonner").then(({ toast }) => {
+                        toast.success("PDF Generated for Leadership Review");
+                      });
+                    }}
+                    className="py-2.5 px-5 rounded border border-border bg-card text-foreground font-semibold text-sm hover:bg-muted transition-colors"
+                  >
+                    📄 Export WBR 1-Pager
+                  </button>
+                </div>
               </div>
             </div>
           </div>
