@@ -73,17 +73,29 @@ const Index = () => {
   const [sidebarItem, setSidebarItem] = useState("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleFetch = async () => {
+  const handleFetchData = async () => {
     setIsFetching(true);
+
     try {
-      const response = await fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
-      if (response.ok) {
-        const data = await response.json();
-        setIssues(data);
-        if (data.length > 0) setSelectedIssue(data[0]);
+      const response = await fetch('https://pristine-liane-noncontemplatively.ngrok-free.app/webhook-test/triage-manual', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`API failed with status: ${response.status}`);
       }
+
+      const liveData = await response.json();
+      console.log("Success from n8n!", liveData);
+
+      setIssues(liveData);
+
     } catch (error) {
-      console.error("Connection error:", error);
+      console.error("Connection error details:", error);
     } finally {
       setIsFetching(false);
     }
