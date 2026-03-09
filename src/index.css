@@ -47,6 +47,7 @@
     --surface-critical: 0 100% 97%; /* #FEF2F2 */
     --surface-warning: 30 100% 97%; /* #FFF7ED */
     --surface-muted: 210 20% 98%; /* #F8FAFC */
+    --surface-muted-yellow: 45 100% 96%; /* light yellow for P3 */
     --terminal-bg: 220 20% 14%;
 
     --sidebar-background: 213 32% 18%;
