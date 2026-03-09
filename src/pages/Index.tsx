@@ -5,6 +5,8 @@ import KPICards from "@/components/dashboard/KPICards";
 import TriageTable from "@/components/dashboard/TriageTable";
 import DeepDivePanel from "@/components/dashboard/DeepDivePanel";
 import JiraModal from "@/components/dashboard/JiraModal";
+import IntegrationsPage from "@/components/dashboard/IntegrationsPage";
+import SettingsPage from "@/components/dashboard/SettingsPage";
 import type { Issue } from "@/components/dashboard/TriageTable";
 
 const defaultIssues: Issue[] = [
