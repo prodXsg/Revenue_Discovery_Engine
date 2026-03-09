@@ -10,17 +10,19 @@ import {
 interface SidebarProps {
   activeItem: string;
   onItemClick: (item: string) => void;
+  activeRiskCount?: number;
+  mutedNoiseCount?: number;
 }
 
-const menuItems = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "active-risks", label: "Active Risks (2)", icon: AlertTriangle },
-  { id: "muted-noise", label: "Muted Noise (1)", icon: VolumeX },
-  { id: "integrations", label: "Integrations", icon: Plug },
-  { id: "settings", label: "Settings", icon: Settings },
-];
+const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCount = 1 }: SidebarProps) => {
+  const menuItems = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "active-risks", label: `Active Risks (${activeRiskCount})`, icon: AlertTriangle },
+    { id: "muted-noise", label: `Muted Noise (${mutedNoiseCount})`, icon: VolumeX },
+    { id: "integrations", label: "Integrations", icon: Plug },
+    { id: "settings", label: "Settings", icon: Settings },
+  ];
 
-const AppSidebar = ({ activeItem, onItemClick }: SidebarProps) => {
   return (
     <aside className="w-60 min-h-screen bg-squid-ink flex flex-col shrink-0">
       {/* Logo */}

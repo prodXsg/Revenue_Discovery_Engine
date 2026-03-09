@@ -50,22 +50,58 @@ const Index = () => {
     }
   };
 
+  const filteredIssues = sidebarItem === "active-risks"
+    ? issues.filter((i) => i.status === "Critical" || i.status === "High")
+    : sidebarItem === "muted-noise"
+    ? issues.filter((i) => i.status === "Muted")
+    : issues;
+
+  const handleSidebarClick = (item: string) => {
+    setSidebarItem(item);
+    const filtered = item === "active-risks"
+      ? issues.filter((i) => i.status === "Critical" || i.status === "High")
+      : item === "muted-noise"
+      ? issues.filter((i) => i.status === "Muted")
+      : issues;
+    if (filtered.length > 0) {
+      setSelectedIssue(filtered[0]);
+    }
+  };
+
+  const activeCount = issues.filter((i) => i.status === "Critical" || i.status === "High").length;
+  const mutedCount = issues.filter((i) => i.status === "Muted").length;
+
   return (
     <div className="flex min-h-screen bg-background">
-      <AppSidebar activeItem={sidebarItem} onItemClick={setSidebarItem} />
+      <AppSidebar
+        activeItem={sidebarItem}
+        onItemClick={handleSidebarClick}
+        activeRiskCount={activeCount}
+        mutedNoiseCount={mutedCount}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         <Header isFetching={isFetching} onFetch={handleFetch} />
 
         <main className="flex-1 p-6 space-y-5 overflow-auto">
-          <KPICards />
-          <TriageTable issues={issues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
-          <DeepDivePanel
-            issue={selectedIssue}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            onCreateJira={() => setIsJiraModalOpen(true)}
-          />
+          {(sidebarItem === "dashboard" || sidebarItem === "active-risks" || sidebarItem === "muted-noise") ? (
+            <>
+              {sidebarItem === "dashboard" && <KPICards />}
+              <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
+              <DeepDivePanel
+                issue={selectedIssue}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                onCreateJira={() => setIsJiraModalOpen(true)}
+              />
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-64">
+              <p className="text-muted-foreground text-sm">
+                {sidebarItem === "integrations" ? "Integrations" : "Settings"} — Coming Soon
+              </p>
+            </div>
+          )}
         </main>
       </div>
 
