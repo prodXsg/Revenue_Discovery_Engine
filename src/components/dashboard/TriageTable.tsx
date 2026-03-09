@@ -12,6 +12,8 @@ export interface Issue {
   drop: string;
   aov: string;
   quotes: string[];
+  rootCause?: string;
+  chartData?: { day: string; tickets: number; conversion: number }[];
 }
 
 interface TriageTableProps {
@@ -34,7 +36,7 @@ const rowBg = (status: string, selected: boolean) => {
   const map: Record<string, string> = {
     Critical: "bg-surface-critical hover:bg-red-50",
     High: "bg-surface-warning hover:bg-orange-50",
-    Muted: "bg-surface-muted hover:bg-muted",
+    Muted: "bg-surface-muted-yellow hover:bg-yellow-50",
   };
   return map[status] || "";
 };
@@ -45,7 +47,6 @@ const TrendIcon = ({ trend }: { trend: string }) => {
   return <Minus size={14} className="text-muted-foreground" />;
 };
 
-// Mini sparkline bars
 const Sparkline = ({ trend }: { trend: string }) => {
   const heights = trend === "up" ? [20, 35, 30, 50, 70, 90] : trend === "down" ? [80, 60, 50, 40, 30, 20] : [40, 42, 38, 40, 41, 39];
   const color = trend === "up" ? "bg-risk-red" : trend === "down" ? "bg-success-green" : "bg-muted-foreground/40";
@@ -62,7 +63,7 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
   return (
     <div className="bg-card rounded border border-border shadow-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border">
-        <h3 className="text-sm font-semibold text-foreground">Triage Queue</h3>
+        <h3 className="text-sm font-bold text-foreground tracking-tight">Active Risk Issues</h3>
       </div>
       <table className="w-full text-sm">
         <thead>
@@ -70,12 +71,12 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
             <th className="text-left px-5 py-2.5 font-medium">Priority</th>
             <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
             <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
-            <th className="text-right px-5 py-2.5 font-medium">Revenue Risk</th>
+            <th className="text-right px-5 py-2.5 font-medium">Revenue at Risk</th>
             <th className="text-center px-5 py-2.5 font-medium">Trend</th>
           </tr>
         </thead>
         <tbody>
-          {issues.map((issue, idx) => (
+          {issues.map((issue) => (
             <tr
               key={issue.id}
               onClick={() => onSelect(issue)}
@@ -88,7 +89,7 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
               </td>
               <td className="px-5 py-3 font-medium text-foreground max-w-xs truncate">{issue.name}</td>
               <td className="px-5 py-3 text-right font-mono text-foreground">{issue.vol}</td>
-              <td className="px-5 py-3 text-right font-mono font-semibold text-foreground">{issue.risk}</td>
+              <td className="px-5 py-3 text-right font-mono font-bold text-amazon-orange text-base">{issue.risk}</td>
               <td className="px-5 py-3">
                 <div className="flex items-center justify-center gap-2">
                   <Sparkline trend={issue.trend} />

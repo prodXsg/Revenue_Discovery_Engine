@@ -5,6 +5,7 @@ import {
   Plug,
   Settings,
   LogOut,
+  FileBarChart,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -19,6 +20,7 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCo
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "active-risks", label: `Active Risks (${activeRiskCount})`, icon: AlertTriangle },
     { id: "muted-noise", label: `Muted Noise (${mutedNoiseCount})`, icon: VolumeX },
+    { id: "reports", label: "Reports", icon: FileBarChart },
     { id: "integrations", label: "Integrations", icon: Plug },
     { id: "settings", label: "Settings", icon: Settings },
   ];
@@ -28,7 +30,7 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCo
       {/* Logo */}
       <div className="px-5 py-5 border-b border-squid-ink-light">
         <h1 className="text-lg font-bold tracking-tight">
-          <span className="text-secondary-foreground">Discovery</span>
+          <span className="text-secondary-foreground">Discovery </span>
           <span className="text-amazon-orange">Engine</span>
         </h1>
       </div>
@@ -61,8 +63,9 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCo
             SG
           </div>
           <div>
-            <p className="text-sm font-medium text-secondary-foreground">Surya G.</p>
-            <p className="text-xs text-sidebar-foreground">Sr. PM</p>
+            <p className="text-sm font-semibold text-secondary-foreground">Surya G.</p>
+            <p className="text-[11px] text-sidebar-foreground">Amazon India</p>
+            <p className="text-[10px] text-amazon-orange font-medium">Enterprise Plan</p>
           </div>
         </div>
         <button className="text-sidebar-foreground hover:text-secondary-foreground transition-colors">

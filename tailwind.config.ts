@@ -66,6 +66,7 @@ export default {
         "surface-critical": "hsl(var(--surface-critical))",
         "surface-warning": "hsl(var(--surface-warning))",
         "surface-muted": "hsl(var(--surface-muted))",
+        "surface-muted-yellow": "hsl(var(--surface-muted-yellow))",
         "terminal-bg": "hsl(var(--terminal-bg))",
       },
       borderRadius: {
