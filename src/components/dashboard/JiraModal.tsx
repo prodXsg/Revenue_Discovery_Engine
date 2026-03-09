@@ -24,7 +24,7 @@ const JiraModal = ({ issue, isOpen, onClose }: JiraModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-card rounded border border-border shadow-lg w-full max-w-lg mx-4">
+      <div className="relative bg-card rounded border border-border shadow-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         {pushed ? (
           <div className="flex flex-col items-center justify-center py-16 px-6">
             <CheckCircle2 size={48} className="text-success-green mb-4" />
@@ -74,7 +74,7 @@ const JiraModal = ({ issue, isOpen, onClose }: JiraModalProps) => {
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Description</label>
                 <textarea
-                  rows={4}
+                  rows={8}
                   defaultValue={`Revenue Impact: ${issue.risk}/week\nTraffic: ${issue.traffic} | Conv Drop: ${issue.drop} | AOV: ${issue.aov}\n\nCustomer Quotes:\n${issue.quotes.map((q) => `- "${q}"`).join("\n")}`}
                   className="mt-1 w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring font-mono"
                 />
