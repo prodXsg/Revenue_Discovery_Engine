@@ -64,67 +64,68 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira }: DeepDive
       {/* Content */}
       <div className="p-5">
         {activeTab === "Correlation Overview" ? (
-          <div className="grid grid-cols-3 gap-4">
-            {/* Col 1: Formula */}
-            <div className="bg-terminal-bg rounded-lg p-5 text-sm font-mono">
-              <p className="text-amazon-orange font-bold text-xs mb-4 tracking-wide">Formula Applied:</p>
-              <p className="text-secondary-foreground text-[13px] leading-relaxed">
-                <span className="text-muted-foreground/70">[</span>Traffic<span className="text-muted-foreground/70">]</span>
-                <span className="text-amazon-orange mx-1">×</span>
-                <span className="text-muted-foreground/70">[</span>Conv. Drop %<span className="text-muted-foreground/70">]</span>
-                <span className="text-amazon-orange mx-1">×</span>
-                <span className="text-muted-foreground/70">[</span>AOV<span className="text-muted-foreground/70">]</span>
-              </p>
-              <div className="border-t border-squid-ink-light mt-4 pt-4 space-y-1.5 text-xs">
-                <p className="text-muted-foreground/60">Traffic: <span className="text-secondary-foreground font-medium">{issue.traffic}</span></p>
-                <p className="text-muted-foreground/60">Conv Drop: <span className="text-secondary-foreground font-medium">{dropNum}%</span></p>
-                <p className="text-muted-foreground/60">AOV: <span className="text-secondary-foreground font-medium">{issue.aov}</span></p>
-                <p className="text-amazon-orange mt-3 text-sm font-bold">
-                  = {trafficNum.toLocaleString()} × {(dropNum / 100).toFixed(4)} × {aovNum.toLocaleString()} = ₹{issue.riskRaw.toLocaleString("en-IN")}
+          <div className="space-y-5">
+            {/* Top Row: Math + Chart side by side */}
+            <div className="grid grid-cols-2 gap-5">
+              {/* Math Box */}
+              <div className="bg-terminal-bg rounded-lg p-5 text-sm font-mono">
+                <p className="text-amazon-orange font-bold text-xs mb-4 tracking-wide">Formula Applied:</p>
+                <p className="text-secondary-foreground text-[13px] leading-relaxed">
+                  <span className="text-muted-foreground/70">[</span>Traffic<span className="text-muted-foreground/70">]</span>
+                  <span className="text-amazon-orange mx-1">×</span>
+                  <span className="text-muted-foreground/70">[</span>Conv. Drop %<span className="text-muted-foreground/70">]</span>
+                  <span className="text-amazon-orange mx-1">×</span>
+                  <span className="text-muted-foreground/70">[</span>AOV<span className="text-muted-foreground/70">]</span>
                 </p>
-              </div>
-            </div>
-
-            {/* Col 2: Chart */}
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Ticket Spike vs Conversion Drop</p>
-              <ResponsiveContainer width="100%" height={200}>
-                <ComposedChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 32%, 91%)" />
-                  <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
-                  <YAxis yAxisId="left" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 4 }} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar yAxisId="left" dataKey="tickets" fill="hsl(33, 100%, 50%)" name="Tickets" radius={[2, 2, 0, 0]} />
-                  <Line yAxisId="right" type="monotone" dataKey="conversion" stroke="hsl(0, 84%, 60%)" name="Conv %" strokeWidth={2} dot={{ r: 3 }} />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Col 3: Insights */}
-            <div className="flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles size={14} className="text-amazon-orange" />
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Discovered Root Cause & Insights</p>
-                </div>
-                <div className="bg-background border border-border rounded-lg p-4">
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {issue.rootCause || "No root cause analysis available for this issue."}
+                <div className="border-t border-squid-ink-light mt-4 pt-4 space-y-1.5 text-xs">
+                  <p className="text-muted-foreground/60">Traffic: <span className="text-secondary-foreground font-medium">{issue.traffic}</span></p>
+                  <p className="text-muted-foreground/60">Conv Drop: <span className="text-secondary-foreground font-medium">{dropNum}%</span></p>
+                  <p className="text-muted-foreground/60">AOV: <span className="text-secondary-foreground font-medium">{issue.aov}</span></p>
+                  <p className="text-amazon-orange mt-3 text-sm font-bold">
+                    = {trafficNum.toLocaleString()} × {(dropNum / 100).toFixed(4)} × {aovNum.toLocaleString()} = ₹{issue.riskRaw.toLocaleString("en-IN")}
                   </p>
-                  <div className="flex items-center gap-2 mt-3">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amazon-orange/10 text-amazon-orange font-semibold">AI Generated</span>
-                    <span className="text-[10px] text-muted-foreground">Confidence: High</span>
-                  </div>
                 </div>
               </div>
-              <button
-                onClick={onCreateJira}
-                className="w-full mt-4 py-3 rounded bg-squid-ink text-secondary-foreground font-semibold text-sm hover:bg-squid-ink-light transition-colors"
-              >
-                Generate Jira Epic
-              </button>
+
+              {/* Chart */}
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Ticket Spike vs Conversion Drop</p>
+                <ResponsiveContainer width="100%" height={220}>
+                  <ComposedChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 32%, 91%)" />
+                    <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
+                    <YAxis yAxisId="left" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
+                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 4 }} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    <Bar yAxisId="left" dataKey="tickets" fill="hsl(33, 100%, 50%)" name="Tickets" radius={[2, 2, 0, 0]} />
+                    <Line yAxisId="right" type="monotone" dataKey="conversion" stroke="hsl(0, 84%, 60%)" name="Conv %" strokeWidth={2} dot={{ r: 3 }} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Bottom Row: Full-width Insights */}
+            <div className="bg-background border border-border rounded-lg p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles size={14} className="text-amazon-orange" />
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Discovered Root Cause & Insights</p>
+              </div>
+              <p className="text-sm text-foreground leading-relaxed">
+                {issue.rootCause || "No root cause analysis available for this issue."}
+              </p>
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amazon-orange/10 text-amazon-orange font-semibold">AI Generated</span>
+                  <span className="text-[10px] text-muted-foreground">Confidence: High</span>
+                </div>
+                <button
+                  onClick={onCreateJira}
+                  className="py-2.5 px-5 rounded bg-squid-ink text-secondary-foreground font-semibold text-sm hover:bg-squid-ink-light transition-colors"
+                >
+                  Generate Jira Epic
+                </button>
+              </div>
             </div>
           </div>
         ) : (
