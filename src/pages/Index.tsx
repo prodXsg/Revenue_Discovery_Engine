@@ -95,7 +95,14 @@ const Index = () => {
       console.log("Success from n8n!", liveData);
 
       const finalIssues = liveData.ranked_results ? liveData.ranked_results : liveData;
+      
+      if (!Array.isArray(finalIssues)) {
+        console.error("API did not return an array. Received:", finalIssues);
+        return;
+      }
+      
       setIssues(finalIssues);
+      if (finalIssues.length > 0) setSelectedIssue(finalIssues[0]);
 
     } catch (error) {
       console.error("Connection error details:", error);
