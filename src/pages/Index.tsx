@@ -92,17 +92,37 @@ const Index = () => {
       }
 
       const liveData = await response.json();
-      console.log("Success from n8n!", liveData);
+      console.log("2. Raw data from n8n:", liveData);
 
-      const finalIssues = liveData.ranked_results ? liveData.ranked_results : liveData;
+      // 🚨 THE TRANSLATOR: This maps n8n's backend variables to your React frontend variables!
+      const rawArray = liveData.ranked_results ? liveData.ranked_results : liveData;
       
-      if (!Array.isArray(finalIssues)) {
-        console.error("API did not return an array. Received:", finalIssues);
-        return;
+      if (!Array.isArray(rawArray)) {
+        throw new Error("n8n did not return an array. Check the Webhook Response node.");
       }
-      
-      setIssues(finalIssues);
-      if (finalIssues.length > 0) setSelectedIssue(finalIssues[0]);
+
+      const formattedIssues = rawArray.map((item, index) => {
+        const isNoise = item.total_revenue_risk_inr === 0;
+        return {
+          id: index + 1,
+          name: item.name,
+          risk: `₹${item.total_revenue_risk_inr.toLocaleString('en-IN')}`,
+          riskRaw: item.total_revenue_risk_inr,
+          vol: item.ticket_count,
+          status: isNoise ? "Muted" : (index === 0 ? "Critical" : "High"),
+          trend: isNoise ? "flat" : "up",
+          traffic: "0",
+          drop: "0%",
+          aov: "₹0",
+          quotes: item.quotes || [],
+          rootCause: item.root_cause || "No root cause provided.",
+          chartData: defaultIssues[0].chartData
+        };
+      });
+
+      console.log("3. Formatted data applied to UI!", formattedIssues);
+      setIssues(formattedIssues);
+      if (formattedIssues.length > 0) setSelectedIssue(formattedIssues[0]);
 
     } catch (error) {
       console.error("Connection error details:", error);
