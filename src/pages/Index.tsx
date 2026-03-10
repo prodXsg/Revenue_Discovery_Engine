@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import AppSidebar from "@/components/dashboard/AppSidebar";
@@ -28,6 +28,31 @@ const generateDynamicChartData = (vol: number, riskRaw: number, id: number) => {
     const tickets = Math.max(1, Math.round(baseTickets * growthFactor + noise));
     const conversion = Math.max(0.3, parseFloat((4.5 - i * (0.2 + riskFactor * 0.08) + noise * 0.05).toFixed(1)));
     return { day, tickets, conversion };
+  });
+};
+
+/** Rebalance priorities: active issues sorted by riskRaw desc → P0, P1, P2… Low stays Low */
+const rebalancePriorities = (allIssues: Issue[]): Issue[] => {
+  const activeIssues = allIssues.filter(
+    (i) => i.status !== "Resolved" && i.status !== "Muted"
+  );
+  const sorted = [...activeIssues].sort((a, b) => b.riskRaw - a.riskRaw);
+
+  const priorityMap = new Map<number, string>();
+  sorted.forEach((issue, index) => {
+    if (issue.riskRaw === 0) {
+      priorityMap.set(issue.id, "Low");
+    } else if (index === 0) {
+      priorityMap.set(issue.id, "Critical");
+    } else {
+      priorityMap.set(issue.id, "High");
+    }
+  });
+
+  return allIssues.map((issue) => {
+    if (issue.status === "Resolved" || issue.status === "Muted") return issue;
+    const newStatus = priorityMap.get(issue.id);
+    return newStatus ? { ...issue, status: newStatus } : issue;
   });
 };
 
@@ -92,7 +117,16 @@ const loadPersistedIssues = (): Issue[] | null => {
 };
 
 const Index = () => {
-  const [issues, setIssues] = useState<Issue[]>(() => loadPersistedIssues() || defaultIssues);
+  const [issues, setIssuesRaw] = useState<Issue[]>(() => {
+    const persisted = loadPersistedIssues();
+    return rebalancePriorities(persisted || defaultIssues);
+  });
+  const setIssues = useCallback((updater: Issue[] | ((prev: Issue[]) => Issue[])) => {
+    setIssuesRaw((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      return rebalancePriorities(next);
+    });
+  }, []);
   const [isFetching, setIsFetching] = useState(false);
   const [isSkeletonVisible, setIsSkeletonVisible] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue>(() => {

@@ -49,6 +49,8 @@
     --surface-muted: 210 20% 98%; /* #F8FAFC */
     --surface-muted-yellow: 45 100% 96%; /* light yellow for P3 */
     --terminal-bg: 220 20% 14%;
+    --row-selected: 210 40% 96%; /* cool slate-50/blue-50 for selected rows */
+    --priority-high: 38 92% 50%; /* amber-500 for P1 */
 
     --sidebar-background: 213 32% 18%;
     --sidebar-foreground: 210 14% 90%;
@@ -99,6 +101,8 @@
     --surface-muted: 220 14% 14%;
     --surface-muted-yellow: 45 40% 14%;
     --terminal-bg: 220 20% 8%;
+    --row-selected: 215 20% 20%;
+    --priority-high: 38 92% 50%;
 
     --sidebar-background: 213 32% 10%;
     --sidebar-foreground: 210 14% 70%;

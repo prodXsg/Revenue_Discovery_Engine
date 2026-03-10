@@ -68,6 +68,8 @@ export default {
         "surface-muted": "hsl(var(--surface-muted))",
         "surface-muted-yellow": "hsl(var(--surface-muted-yellow))",
         "terminal-bg": "hsl(var(--terminal-bg))",
+        "row-selected": "hsl(var(--row-selected))",
+        "priority-high": "hsl(var(--priority-high))",
       },
       borderRadius: {
         lg: "var(--radius)",

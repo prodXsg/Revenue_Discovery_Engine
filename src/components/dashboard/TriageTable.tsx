@@ -27,7 +27,7 @@ interface TriageTableProps {
 const statusBadge = (status: string) => {
   const map: Record<string, string> = {
     Critical: "bg-risk-red text-primary-foreground",
-    High: "bg-amazon-orange text-primary-foreground",
+    High: "bg-priority-high text-primary-foreground",
     Low: "bg-muted text-muted-foreground",
     Muted: "bg-muted text-muted-foreground",
     Resolved: "bg-success-green text-primary-foreground",
@@ -47,7 +47,7 @@ const statusLabel = (status: string) => {
 };
 
 const rowBg = (status: string, selected: boolean) => {
-  if (selected) return "bg-accent border-l-[3px] border-l-amazon-orange font-semibold";
+  if (selected) return "bg-row-selected border-l-[3px] border-l-amazon-orange font-semibold text-foreground";
   const map: Record<string, string> = {
     Critical: "bg-surface-critical hover:bg-surface-critical/80",
     High: "bg-surface-warning hover:bg-surface-warning/80",
