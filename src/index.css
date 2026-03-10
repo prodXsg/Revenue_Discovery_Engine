@@ -101,6 +101,8 @@
     --surface-muted: 220 14% 14%;
     --surface-muted-yellow: 45 40% 14%;
     --terminal-bg: 220 20% 8%;
+    --row-selected: 215 20% 20%;
+    --priority-high: 38 92% 50%;
 
     --sidebar-background: 213 32% 10%;
     --sidebar-foreground: 210 14% 70%;
