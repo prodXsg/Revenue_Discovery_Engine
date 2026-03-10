@@ -80,10 +80,10 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm">
               <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
-                <th className="text-left px-5 py-2.5 font-medium">Priority</th>
-                <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
-                <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
-                <th className="text-right px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
+                <th className="text-center px-5 py-2.5 font-medium">Priority</th>
+                <th className="text-center px-5 py-2.5 font-medium">Theme Name</th>
+                <th className="text-center px-5 py-2.5 font-medium">Tickets</th>
+                <th className="text-center px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
                 <th className="text-center px-5 py-2.5 font-medium">Trend</th>
               </tr>
             </thead>
