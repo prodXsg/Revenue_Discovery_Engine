@@ -31,6 +31,31 @@ const generateDynamicChartData = (vol: number, riskRaw: number, id: number) => {
   });
 };
 
+/** Rebalance priorities: active issues sorted by riskRaw desc → P0, P1, P2… Low stays Low */
+const rebalancePriorities = (allIssues: Issue[]): Issue[] => {
+  const activeIssues = allIssues.filter(
+    (i) => i.status !== "Resolved" && i.status !== "Muted"
+  );
+  const sorted = [...activeIssues].sort((a, b) => b.riskRaw - a.riskRaw);
+
+  const priorityMap = new Map<number, string>();
+  sorted.forEach((issue, index) => {
+    if (issue.riskRaw === 0) {
+      priorityMap.set(issue.id, "Low");
+    } else if (index === 0) {
+      priorityMap.set(issue.id, "Critical");
+    } else {
+      priorityMap.set(issue.id, "High");
+    }
+  });
+
+  return allIssues.map((issue) => {
+    if (issue.status === "Resolved" || issue.status === "Muted") return issue;
+    const newStatus = priorityMap.get(issue.id);
+    return newStatus ? { ...issue, status: newStatus } : issue;
+  });
+};
+
 const defaultIssues: Issue[] = [
   {
     id: 1, name: "iOS 17 UPI Biometric Freeze & Core App Crashes", risk: "₹54,68,400", riskRaw: 5468400, vol: 24, status: "Critical", trend: "up", traffic: "45,000", drop: "-1.4%", aov: "₹1,200",
