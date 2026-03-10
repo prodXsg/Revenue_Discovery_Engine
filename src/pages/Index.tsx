@@ -117,7 +117,10 @@ const loadPersistedIssues = (): Issue[] | null => {
 };
 
 const Index = () => {
-  const [issues, setIssues] = useState<Issue[]>(() => loadPersistedIssues() || defaultIssues);
+  const [issues, setIssuesRaw] = useState<Issue[]>(() => {
+    const persisted = loadPersistedIssues();
+    return rebalancePriorities(persisted || defaultIssues);
+  });
   const [isFetching, setIsFetching] = useState(false);
   const [isSkeletonVisible, setIsSkeletonVisible] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue>(() => {
