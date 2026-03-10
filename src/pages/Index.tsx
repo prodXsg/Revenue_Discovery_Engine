@@ -331,6 +331,7 @@ const Index = () => {
           <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
           {filteredIssues.length > 0 && (
             <DeepDivePanel
+              key={selectedIssue.id}
               issue={selectedIssue}
               activeTab={activeTab}
               onTabChange={setActiveTab}
