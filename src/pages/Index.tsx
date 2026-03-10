@@ -174,24 +174,23 @@ const Index = () => {
       const existingMap = new Map(existingIssues.map((i) => [i.name, i]));
       const detectedDate = formatDetectedDate();
 
-      const formattedIssues: Issue[] = rawArray.map((item: any, index: number) => {
+      // Sort by revenue risk descending before mapping
+      const sortedArray = [...rawArray].sort((a: any, b: any) =>
+        (b.total_revenue_risk_inr || 0) - (a.total_revenue_risk_inr || 0)
+      );
+
+      const formattedIssues: Issue[] = sortedArray.map((item: any, index: number) => {
         const existing = existingMap.get(item.name);
-
-        // Preserve user-defined statuses (Resolved/Muted)
-        if (existing && (existing.status === "Resolved" || existing.status === "Muted")) {
-          return { ...existing };
-        }
-
         const riskRaw = item.total_revenue_risk_inr || 0;
         const vol = item.ticket_count || 0;
 
-        return {
+        const mappedData: Issue = {
           id: index + 1,
           name: item.name,
           risk: `₹${riskRaw.toLocaleString('en-IN')}`,
           riskRaw,
           vol,
-          status: riskRaw === 0 ? "Low" : (index === 0 ? "Critical" : "High"),
+          status: "Low",
           trend: riskRaw === 0 ? "flat" : "up",
           traffic: "0",
           drop: "0%",
@@ -201,6 +200,19 @@ const Index = () => {
           chartData: generateDynamicChartData(vol, riskRaw, index + 1),
           dateDetected: existing?.dateDetected || detectedDate,
         };
+
+        // Preserve user-defined statuses (Resolved/Muted) — never auto-assign Muted
+        if (existing && (existing.status === "Resolved" || existing.status === "Muted")) {
+          return { ...mappedData, status: existing.status, previousStatus: existing.previousStatus };
+        }
+
+        // Apply automatic triage for active issues
+        if (riskRaw > 0) {
+          // Among active (non-preserved) items sorted by risk, assign P0 to rank 0, P1 to rest
+          mappedData.status = index === 0 ? "Critical" : "High";
+        }
+
+        return mappedData;
       });
 
       await new Promise((r) => setTimeout(r, 2000));
