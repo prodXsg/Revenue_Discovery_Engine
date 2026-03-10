@@ -1,7 +1,7 @@
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { MessageSquareQuote, Sparkles, Check, VolumeX } from "lucide-react";
+import { MessageSquareQuote, Sparkles, Check, VolumeX, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import type { Issue } from "./TriageTable";
@@ -129,6 +129,16 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles size={14} className="text-amazon-orange" />
                 <p className="text-xs font-bold text-foreground uppercase tracking-wide">Discovered Root Cause & Insights</p>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info size={13} className="text-muted-foreground cursor-help hover:text-foreground transition-colors" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs text-xs">
+                      This is an AI-generated insight based on semantic clustering. Please verify raw quotes before execution.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <p className="text-sm text-foreground leading-relaxed">
                 {issue.rootCause || "No root cause analysis available for this issue."}
@@ -138,7 +148,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-amazon-orange/10 text-amazon-orange font-semibold flex items-center gap-1">
                     <Sparkles size={10} /> AI-Generated Insight
                   </span>
-                  <span className="text-[10px] text-muted-foreground">• Confidence: High</span>
+                  <span className="text-[10px] text-muted-foreground">• Confidence: <span className="font-bold text-success-green bg-success-green/10 px-1.5 py-0.5 rounded">High</span></span>
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Tertiary: Mute Theme */}

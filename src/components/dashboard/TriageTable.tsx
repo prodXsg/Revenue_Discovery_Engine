@@ -27,6 +27,7 @@ const statusBadge = (status: string) => {
     Critical: "bg-risk-red text-primary-foreground",
     High: "bg-amazon-orange text-primary-foreground",
     Muted: "bg-muted text-muted-foreground",
+    Resolved: "bg-success-green text-primary-foreground",
   };
   return map[status] || "bg-muted text-muted-foreground";
 };
@@ -79,10 +80,10 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm">
               <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
-                <th className="text-left px-5 py-2.5 font-medium">Priority</th>
-                <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
-                <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
-                <th className="text-right px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
+                <th className="text-center px-5 py-2.5 font-medium">Priority</th>
+                <th className="text-center px-5 py-2.5 font-medium">Theme Name</th>
+                <th className="text-center px-5 py-2.5 font-medium">Tickets</th>
+                <th className="text-center px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
                 <th className="text-center px-5 py-2.5 font-medium">Trend</th>
               </tr>
             </thead>
@@ -93,14 +94,14 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
                   onClick={() => onSelect(issue)}
                   className={`cursor-pointer transition-all duration-150 border-b border-border last:border-0 ${rowBg(issue.status, selectedId === issue.id)} ${issue.status === "Muted" ? "opacity-60" : ""}`}
                 >
-                  <td className="px-5 py-3">
+                  <td className="px-5 py-3 text-center">
                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${statusBadge(issue.status)}`}>
-                      {issue.status === "Critical" ? "P0" : issue.status === "High" ? "P1" : "Muted"}
+                      {issue.status === "Critical" ? "P0" : issue.status === "High" ? "P1" : issue.status === "Resolved" ? "Resolved" : "Muted"}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-foreground max-w-xs truncate">{issue.name}</td>
-                  <td className="px-5 py-3 text-right font-mono text-foreground">{issue.vol}</td>
-                  <td className="px-5 py-3 text-right font-mono font-bold text-amazon-orange text-base">
+                  <td className="px-5 py-3 text-center text-foreground max-w-xs truncate">{issue.name}</td>
+                  <td className="px-5 py-3 text-center font-mono text-foreground">{issue.vol}</td>
+                  <td className="px-5 py-3 text-center font-mono font-bold text-amazon-orange text-base">
                     {issue.risk}
                   </td>
                   <td className="px-5 py-3">
