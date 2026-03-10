@@ -273,23 +273,40 @@ const Index = () => {
 
   const handleMute = () => {
     const currentIssue = selectedIssue;
+    const wasMuted = currentIssue.status === "Muted";
 
-    setIssues((prev) =>
-      prev.map((i) => (i.id === currentIssue.id ? { ...i, status: "Muted", trend: "flat", previousStatus: i.status } : i))
-    );
-
-    toast("Theme Muted", {
-      description: `"${currentIssue.name}" moved to Muted Noise.`,
-      action: {
-        label: "Undo",
-        onClick: () => {
-          setIssues((prev) => prev.map((i) => i.id === currentIssue.id ? { ...i, status: currentIssue.status, trend: currentIssue.trend, previousStatus: undefined } : i));
+    if (wasMuted) {
+      // Unmute: restore to previous status (rebalancePriorities will recalculate)
+      const previousStatus = currentIssue.previousStatus || "High";
+      setIssues((prev) =>
+        prev.map((i) => i.id === currentIssue.id ? { ...i, status: previousStatus, trend: "up", previousStatus: undefined } : i)
+      );
+      toast("Theme Unmuted", {
+        description: `"${currentIssue.name}" restored to Active Risks.`,
+        action: {
+          label: "Undo",
+          onClick: () => {
+            setIssues((prev) => prev.map((i) => i.id === currentIssue.id ? { ...i, status: "Muted", trend: "flat", previousStatus: currentIssue.previousStatus } : i));
+          },
         },
-      },
-    });
-
-    const remaining = issues.filter((i) => i.id !== currentIssue.id && (i.status === "Critical" || i.status === "High" || i.status === "Low"));
-    if (remaining.length > 0) setSelectedIssue(remaining[0]);
+      });
+    } else {
+      // Mute
+      setIssues((prev) =>
+        prev.map((i) => (i.id === currentIssue.id ? { ...i, status: "Muted", trend: "flat", previousStatus: i.status } : i))
+      );
+      toast("Theme Muted", {
+        description: `"${currentIssue.name}" moved to Muted Noise.`,
+        action: {
+          label: "Undo",
+          onClick: () => {
+            setIssues((prev) => prev.map((i) => i.id === currentIssue.id ? { ...i, status: currentIssue.status, trend: currentIssue.trend, previousStatus: undefined } : i));
+          },
+        },
+      });
+      const remaining = issues.filter((i) => i.id !== currentIssue.id && (i.status === "Critical" || i.status === "High" || i.status === "Low"));
+      if (remaining.length > 0) setSelectedIssue(remaining[0]);
+    }
   };
 
   const filteredIssues = useMemo(() => {

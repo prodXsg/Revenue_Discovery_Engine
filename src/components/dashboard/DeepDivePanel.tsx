@@ -1,7 +1,7 @@
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { MessageSquareQuote, Sparkles, Check, VolumeX, Info, RotateCcw } from "lucide-react";
+import { MessageSquareQuote, Sparkles, Check, VolumeX, Volume2, Info, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Issue } from "./TriageTable";
 
@@ -34,6 +34,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
   const dropNum = Math.abs(parseFloat(issue.drop || "0"));
   const aovNum = parseInt(issue.aov?.replace(/[₹,]/g, "") || "0");
 
+  const isMuted = issue.status === "Muted";
   const isResolved = issue.status === "Resolved";
 
   return (
@@ -142,13 +143,23 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                   <span className="text-[10px] text-muted-foreground">• Confidence: <span className="font-bold text-success-green bg-success-green/10 px-1.5 py-0.5 rounded">High</span></span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={onMute}
-                    className="py-2 px-4 rounded text-muted-foreground font-medium text-sm hover:bg-muted/60 transition-colors flex items-center gap-1.5"
-                  >
-                    <VolumeX size={14} />
-                    Mute Theme
-                  </button>
+                  {isMuted ? (
+                    <button
+                      onClick={onMute}
+                      className="py-2 px-4 rounded text-amazon-orange font-medium text-sm hover:bg-amazon-orange/10 transition-colors flex items-center gap-1.5"
+                    >
+                      <Volume2 size={14} />
+                      Unmute Theme
+                    </button>
+                  ) : (
+                    <button
+                      onClick={onMute}
+                      className="py-2 px-4 rounded text-muted-foreground font-medium text-sm hover:bg-muted/60 transition-colors flex items-center gap-1.5"
+                    >
+                      <VolumeX size={14} />
+                      Mute Theme
+                    </button>
+                  )}
 
                   {isResolved ? (
                     <button
