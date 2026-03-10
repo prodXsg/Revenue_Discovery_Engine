@@ -75,14 +75,16 @@ const Index = () => {
 
   const handleFetchData = async () => {
     setIsFetching(true);
+    console.log("1. Starting API call...");
 
     try {
-      const response = await fetch('https://pristine-liane-noncontemplatively.ngrok-free.app/webhook-test/triage-manual', {
+      const response = await fetch('https://pristine-liane-noncontemplatively.ngrok-free.dev/webhook-test/triage-manual', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/plain',
           'ngrok-skip-browser-warning': 'true'
-        }
+        },
+        body: JSON.stringify({ action: "fetch_triage" })
       });
 
       if (!response.ok) {
@@ -92,7 +94,8 @@ const Index = () => {
       const liveData = await response.json();
       console.log("Success from n8n!", liveData);
 
-      setIssues(liveData);
+      const finalIssues = liveData.ranked_results ? liveData.ranked_results : liveData;
+      setIssues(finalIssues);
 
     } catch (error) {
       console.error("Connection error details:", error);
