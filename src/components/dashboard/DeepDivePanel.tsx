@@ -34,6 +34,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
   const dropNum = Math.abs(parseFloat(issue.drop || "0"));
   const aovNum = parseInt(issue.aov?.replace(/[₹,]/g, "") || "0");
 
+  const isMuted = issue.status === "Muted";
   const isResolved = issue.status === "Resolved";
 
   return (
