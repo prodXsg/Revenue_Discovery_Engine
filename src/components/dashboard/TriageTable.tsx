@@ -27,6 +27,7 @@ const statusBadge = (status: string) => {
     Critical: "bg-risk-red text-primary-foreground",
     High: "bg-amazon-orange text-primary-foreground",
     Muted: "bg-muted text-muted-foreground",
+    Resolved: "bg-success-green text-primary-foreground",
   };
   return map[status] || "bg-muted text-muted-foreground";
 };
