@@ -1,11 +1,14 @@
 import { useState, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
 import AppSidebar from "@/components/dashboard/AppSidebar";
 import Header from "@/components/dashboard/Header";
 import KPICards from "@/components/dashboard/KPICards";
 import TriageTable from "@/components/dashboard/TriageTable";
 import DeepDivePanel from "@/components/dashboard/DeepDivePanel";
 import JiraModal from "@/components/dashboard/JiraModal";
+import WBRModal from "@/components/dashboard/WBRModal";
+import SkeletonLoader from "@/components/dashboard/SkeletonLoader";
 import SettingsPage from "@/components/dashboard/SettingsPage";
 import IntegrationsPage from "@/components/dashboard/IntegrationsPage";
 import ReportsPage from "@/components/dashboard/ReportsPage";
@@ -56,7 +59,17 @@ const defaultIssues: Issue[] = [
   },
 ];
 
-const webhookUrl = 'http://localhost:5678/webhook-test/triage-manual';
+const formatTimestamp = () => {
+  return new Date().toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }) + ", " + new Date().toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
 
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
@@ -67,14 +80,18 @@ const pageVariants = {
 const Index = () => {
   const [issues, setIssues] = useState<Issue[]>(defaultIssues);
   const [isFetching, setIsFetching] = useState(false);
+  const [isSkeletonVisible, setIsSkeletonVisible] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue>(defaultIssues[0]);
   const [activeTab, setActiveTab] = useState("Correlation Overview");
   const [isJiraModalOpen, setIsJiraModalOpen] = useState(false);
+  const [isWBRModalOpen, setIsWBRModalOpen] = useState(false);
   const [sidebarItem, setSidebarItem] = useState("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
+  const [lastUpdated, setLastUpdated] = useState<string | null>(formatTimestamp());
 
   const handleFetchData = async () => {
     setIsFetching(true);
+    setIsSkeletonVisible(true);
     console.log("1. Starting API call...");
 
     try {
@@ -94,14 +111,13 @@ const Index = () => {
       const liveData = await response.json();
       console.log("2. Raw data from n8n:", liveData);
 
-      // 🚨 THE TRANSLATOR: This maps n8n's backend variables to your React frontend variables!
       const rawArray = liveData.ranked_results ? liveData.ranked_results : liveData;
-      
+
       if (!Array.isArray(rawArray)) {
         throw new Error("n8n did not return an array. Check the Webhook Response node.");
       }
 
-      const formattedIssues = rawArray.map((item, index) => {
+      const formattedIssues: Issue[] = rawArray.map((item: any, index: number) => {
         const isNoise = item.total_revenue_risk_inr === 0;
         return {
           id: index + 1,
@@ -116,19 +132,48 @@ const Index = () => {
           aov: "₹0",
           quotes: item.quotes || [],
           rootCause: item.root_cause || "No root cause provided.",
-          chartData: defaultIssues[0].chartData
+          chartData: defaultIssues[0].chartData,
         };
       });
 
       console.log("3. Formatted data applied to UI!", formattedIssues);
+
+      // Ensure skeleton shows for at least 2s
+      await new Promise((r) => setTimeout(r, 2000));
+
       setIssues(formattedIssues);
       if (formattedIssues.length > 0) setSelectedIssue(formattedIssues[0]);
+      setLastUpdated(formatTimestamp());
+      toast.success("Data refreshed successfully", { description: `${formattedIssues.length} issues loaded from AI triage.` });
 
     } catch (error) {
       console.error("Connection error details:", error);
+      toast.error("Failed to fetch data", { description: "Check console for details." });
+      // Still show skeleton for minimum time
+      await new Promise((r) => setTimeout(r, 1500));
     } finally {
       setIsFetching(false);
+      setIsSkeletonVisible(false);
     }
+  };
+
+  const handleResolve = () => {
+    setIssues((prev) =>
+      prev.map((i) => (i.id === selectedIssue.id ? { ...i, status: "Resolved" } : i))
+    );
+    toast.success("Issue Resolved", { description: `"${selectedIssue.name}" marked as resolved.` });
+    // Select next available issue
+    const remaining = issues.filter((i) => i.id !== selectedIssue.id && (i.status === "Critical" || i.status === "High"));
+    if (remaining.length > 0) setSelectedIssue(remaining[0]);
+  };
+
+  const handleMute = () => {
+    setIssues((prev) =>
+      prev.map((i) => (i.id === selectedIssue.id ? { ...i, status: "Muted", trend: "flat" } : i))
+    );
+    toast("Theme Muted", { description: `"${selectedIssue.name}" moved to Muted Noise.` });
+    const remaining = issues.filter((i) => i.id !== selectedIssue.id && (i.status === "Critical" || i.status === "High"));
+    if (remaining.length > 0) setSelectedIssue(remaining[0]);
   };
 
   const filteredIssues = useMemo(() => {
@@ -138,7 +183,13 @@ const Index = () => {
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      list = list.filter((i) => i.name.toLowerCase().includes(q) || i.risk.toLowerCase().includes(q) || i.status.toLowerCase().includes(q));
+      list = list.filter(
+        (i) =>
+          i.name.toLowerCase().includes(q) ||
+          i.risk.toLowerCase().includes(q) ||
+          i.status.toLowerCase().includes(q) ||
+          (i.rootCause && i.rootCause.toLowerCase().includes(q))
+      );
     }
     return list;
   }, [issues, sidebarItem, searchQuery]);
@@ -161,11 +212,28 @@ const Index = () => {
 
   const renderContent = () => {
     if (showDashboard) {
+      if (isSkeletonVisible) {
+        return (
+          <motion.div key="skeleton" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+            <SkeletonLoader />
+          </motion.div>
+        );
+      }
       return (
         <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="space-y-5">
-          {sidebarItem === "dashboard" && <KPICards />}
+          {sidebarItem === "dashboard" && <KPICards issues={issues} />}
           <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
-          <DeepDivePanel issue={selectedIssue} activeTab={activeTab} onTabChange={setActiveTab} onCreateJira={() => setIsJiraModalOpen(true)} />
+          {filteredIssues.length > 0 && (
+            <DeepDivePanel
+              issue={selectedIssue}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              onCreateJira={() => setIsJiraModalOpen(true)}
+              onExportWBR={() => setIsWBRModalOpen(true)}
+              onResolve={handleResolve}
+              onMute={handleMute}
+            />
+          )}
         </motion.div>
       );
     }
@@ -180,7 +248,13 @@ const Index = () => {
       <AppSidebar activeItem={sidebarItem} onItemClick={handleSidebarClick} activeRiskCount={activeCount} mutedNoiseCount={mutedCount} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header isFetching={isFetching} onFetch={handleFetchData} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <Header
+          isFetching={isFetching}
+          onFetch={handleFetchData}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          lastUpdated={lastUpdated}
+        />
 
         <main className="flex-1 p-6 overflow-auto">
           <AnimatePresence mode="wait">
@@ -190,6 +264,7 @@ const Index = () => {
       </div>
 
       <JiraModal issue={selectedIssue} isOpen={isJiraModalOpen} onClose={() => setIsJiraModalOpen(false)} />
+      <WBRModal issue={selectedIssue} isOpen={isWBRModalOpen} onClose={() => setIsWBRModalOpen(false)} />
     </div>
   );
 };

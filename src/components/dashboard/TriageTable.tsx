@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, SearchX } from "lucide-react";
 
 export interface Issue {
   id: number;
@@ -32,13 +32,13 @@ const statusBadge = (status: string) => {
 };
 
 const rowBg = (status: string, selected: boolean) => {
-  if (selected) return "bg-primary/5 ring-1 ring-inset ring-primary/20";
+  if (selected) return "bg-muted/60 border-l-[3px] border-l-amazon-orange font-semibold";
   const map: Record<string, string> = {
-    Critical: "bg-surface-critical hover:bg-red-50",
-    High: "bg-surface-warning hover:bg-orange-50",
-    Muted: "bg-surface-muted-yellow hover:bg-yellow-50",
+    Critical: "bg-surface-critical hover:bg-surface-critical/80",
+    High: "bg-surface-warning hover:bg-surface-warning/80",
+    Muted: "bg-surface-muted-yellow hover:bg-muted/40",
   };
-  return map[status] || "";
+  return `border-l-[3px] border-l-transparent ${map[status] || ""}`;
 };
 
 const TrendIcon = ({ trend }: { trend: string }) => {
@@ -65,41 +65,56 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
       <div className="px-5 py-3 border-b border-border">
         <h3 className="text-sm font-bold text-foreground tracking-tight">Active Risk Issues</h3>
       </div>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
-            <th className="text-left px-5 py-2.5 font-medium">Priority</th>
-            <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
-            <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
-            <th className="text-right px-5 py-2.5 font-medium">Revenue at Risk</th>
-            <th className="text-center px-5 py-2.5 font-medium">Trend</th>
-          </tr>
-        </thead>
-        <tbody>
-          {issues.map((issue) => (
-            <tr
-              key={issue.id}
-              onClick={() => onSelect(issue)}
-              className={`cursor-pointer transition-colors border-b border-border last:border-0 ${rowBg(issue.status, selectedId === issue.id)} ${issue.status === "Muted" ? "opacity-60" : ""}`}
-            >
-              <td className="px-5 py-3">
-                <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${statusBadge(issue.status)}`}>
-                  {issue.status === "Critical" ? "P0" : issue.status === "High" ? "P1" : "Muted"}
-                </span>
-              </td>
-              <td className="px-5 py-3 font-medium text-foreground max-w-xs truncate">{issue.name}</td>
-              <td className="px-5 py-3 text-right font-mono text-foreground">{issue.vol}</td>
-              <td className="px-5 py-3 text-right font-mono font-bold text-amazon-orange text-base">{issue.risk}</td>
-              <td className="px-5 py-3">
-                <div className="flex items-center justify-center gap-2">
-                  <Sparkline trend={issue.trend} />
-                  <TrendIcon trend={issue.trend} />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+      {issues.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-6">
+          <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
+            <SearchX size={24} className="text-muted-foreground" />
+          </div>
+          <p className="text-sm font-semibold text-foreground mb-1">No friction themes match your search</p>
+          <p className="text-xs text-muted-foreground">Try adjusting your search query or clearing filters.</p>
+        </div>
+      ) : (
+        <div className="max-h-[400px] overflow-y-auto scrollbar-thin">
+          <table className="w-full text-sm">
+            <thead className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm">
+              <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
+                <th className="text-left px-5 py-2.5 font-medium">Priority</th>
+                <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
+                <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
+                <th className="text-right px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
+                <th className="text-center px-5 py-2.5 font-medium">Trend</th>
+              </tr>
+            </thead>
+            <tbody>
+              {issues.map((issue) => (
+                <tr
+                  key={issue.id}
+                  onClick={() => onSelect(issue)}
+                  className={`cursor-pointer transition-all duration-150 border-b border-border last:border-0 ${rowBg(issue.status, selectedId === issue.id)} ${issue.status === "Muted" ? "opacity-60" : ""}`}
+                >
+                  <td className="px-5 py-3">
+                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${statusBadge(issue.status)}`}>
+                      {issue.status === "Critical" ? "P0" : issue.status === "High" ? "P1" : "Muted"}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3 text-foreground max-w-xs truncate">{issue.name}</td>
+                  <td className="px-5 py-3 text-right font-mono text-foreground">{issue.vol}</td>
+                  <td className="px-5 py-3 text-right font-mono font-bold text-amazon-orange text-base">
+                    {issue.risk}
+                  </td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <Sparkline trend={issue.trend} />
+                      <TrendIcon trend={issue.trend} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
