@@ -1,9 +1,8 @@
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { MessageSquareQuote, Sparkles, Check, VolumeX, Info } from "lucide-react";
+import { MessageSquareQuote, Sparkles, Check, VolumeX, Info, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { toast } from "sonner";
 import type { Issue } from "./TriageTable";
 
 interface DeepDivePanelProps {
@@ -16,7 +15,6 @@ interface DeepDivePanelProps {
   onMute: () => void;
 }
 
-// Generate deterministic 7-day trend data seeded by issue ID
 const generateChartData = (issueId: number) => {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const seed = issueId * 7;
@@ -32,13 +30,14 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
   const tabs = ["Correlation Overview", "Voice of Customer"];
   const chartData = issue.chartData || generateChartData(issue.id);
 
-  const trafficNum = parseInt(issue.traffic.replace(/,/g, ""));
-  const dropNum = Math.abs(parseFloat(issue.drop));
-  const aovNum = parseInt(issue.aov.replace(/[₹,]/g, ""));
+  const trafficNum = parseInt(issue.traffic?.replace(/,/g, "") || "0");
+  const dropNum = Math.abs(parseFloat(issue.drop || "0"));
+  const aovNum = parseInt(issue.aov?.replace(/[₹,]/g, "") || "0");
+
+  const isResolved = issue.status === "Resolved";
 
   return (
     <div className="bg-card rounded border border-border shadow-sm overflow-hidden">
-      {/* Header */}
       <div className="px-5 py-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-base font-bold text-foreground tracking-tight">{issue.name}</h2>
@@ -48,16 +47,13 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="px-5 border-b border-border flex gap-0">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => onTabChange(tab)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
-              activeTab === tab
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground"
+              activeTab === tab ? "text-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab}
@@ -68,13 +64,10 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
         ))}
       </div>
 
-      {/* Content */}
       <div className="p-5">
         {activeTab === "Correlation Overview" ? (
           <div className="space-y-5">
-            {/* Top Row: Math + Chart side by side */}
             <div className="grid grid-cols-2 gap-5">
-              {/* Math Box */}
               <div className="bg-terminal-bg rounded-lg p-5 text-sm font-mono">
                 <TooltipProvider>
                   <Tooltip>
@@ -106,7 +99,6 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                 </div>
               </div>
 
-              {/* Chart */}
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Ticket Spike vs Conversion Drop</p>
                 <ResponsiveContainer width="100%" height={220}>
@@ -124,7 +116,6 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
               </div>
             </div>
 
-            {/* Bottom Row: Root Cause & Insights */}
             <div className="bg-background border border-border rounded-lg p-5">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles size={14} className="text-amazon-orange" />
@@ -151,7 +142,6 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                   <span className="text-[10px] text-muted-foreground">• Confidence: <span className="font-bold text-success-green bg-success-green/10 px-1.5 py-0.5 rounded">High</span></span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {/* Tertiary: Mute Theme */}
                   <button
                     onClick={onMute}
                     className="py-2 px-4 rounded text-muted-foreground font-medium text-sm hover:bg-muted/60 transition-colors flex items-center gap-1.5"
@@ -159,22 +149,31 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                     <VolumeX size={14} />
                     Mute Theme
                   </button>
-                  {/* Success: Mark Resolved */}
-                  <button
-                    onClick={onResolve}
-                    className="py-2 px-4 rounded text-success-green font-medium text-sm hover:bg-success-green/10 transition-colors flex items-center gap-1.5"
-                  >
-                    <Check size={14} />
-                    Mark Resolved
-                  </button>
-                  {/* Secondary: Export WBR */}
+
+                  {isResolved ? (
+                    <button
+                      onClick={onResolve}
+                      className="py-2 px-4 rounded text-amazon-orange font-medium text-sm hover:bg-amazon-orange/10 transition-colors flex items-center gap-1.5"
+                    >
+                      <RotateCcw size={14} />
+                      Reopen Issue
+                    </button>
+                  ) : (
+                    <button
+                      onClick={onResolve}
+                      className="py-2 px-4 rounded text-success-green font-medium text-sm hover:bg-success-green/10 transition-colors flex items-center gap-1.5"
+                    >
+                      <Check size={14} />
+                      Mark Resolved
+                    </button>
+                  )}
+
                   <button
                     onClick={onExportWBR}
                     className="py-2 px-4 rounded border border-squid-ink text-foreground font-semibold text-sm hover:bg-muted transition-colors"
                   >
                     📄 Export WBR 1-Pager
                   </button>
-                  {/* Primary: Generate Jira */}
                   <button
                     onClick={onCreateJira}
                     className="py-2.5 px-5 rounded bg-squid-ink text-secondary-foreground font-semibold text-sm hover:bg-squid-ink-light transition-colors"

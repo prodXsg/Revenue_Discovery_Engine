@@ -6,6 +6,7 @@ import {
   Settings,
   LogOut,
   FileBarChart,
+  CheckCircle2,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -13,12 +14,14 @@ interface SidebarProps {
   onItemClick: (item: string) => void;
   activeRiskCount?: number;
   mutedNoiseCount?: number;
+  resolvedCount?: number;
 }
 
-const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCount = 1 }: SidebarProps) => {
+const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 0, mutedNoiseCount = 0, resolvedCount = 0 }: SidebarProps) => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "active-risks", label: `Active Risks (${activeRiskCount})`, icon: AlertTriangle },
+    { id: "resolved", label: `Resolved (${resolvedCount})`, icon: CheckCircle2 },
     { id: "muted-noise", label: `Muted Noise (${mutedNoiseCount})`, icon: VolumeX },
     { id: "reports", label: "Reports", icon: FileBarChart },
     { id: "integrations", label: "Integrations", icon: Plug },
@@ -27,7 +30,6 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCo
 
   return (
     <aside className="w-60 min-h-screen bg-squid-ink flex flex-col shrink-0">
-      {/* Logo */}
       <div className="px-5 py-5 border-b border-squid-ink-light">
         <h1 className="text-lg font-bold tracking-tight">
           <span className="text-secondary-foreground">Discovery </span>
@@ -35,7 +37,6 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCo
         </h1>
       </div>
 
-      {/* Menu */}
       <nav className="flex-1 py-4 px-3 space-y-1">
         {menuItems.map((item) => {
           const isActive = activeItem === item.id;
@@ -56,7 +57,6 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 2, mutedNoiseCo
         })}
       </nav>
 
-      {/* User Profile */}
       <div className="px-4 py-4 border-t border-squid-ink-light flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-amazon-orange flex items-center justify-center text-primary-foreground text-xs font-bold">
