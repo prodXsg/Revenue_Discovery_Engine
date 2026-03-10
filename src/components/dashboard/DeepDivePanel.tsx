@@ -1,7 +1,7 @@
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { MessageSquareQuote, Sparkles, Check, VolumeX, Info, RotateCcw } from "lucide-react";
+import { MessageSquareQuote, Sparkles, Check, VolumeX, Volume2, Info, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Issue } from "./TriageTable";
 
