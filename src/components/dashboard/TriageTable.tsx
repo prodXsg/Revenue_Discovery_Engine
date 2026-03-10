@@ -47,7 +47,7 @@ const statusLabel = (status: string) => {
 };
 
 const rowBg = (status: string, selected: boolean) => {
-  if (selected) return "bg-accent border-l-[3px] border-l-amazon-orange font-semibold";
+  if (selected) return "bg-row-selected border-l-[3px] border-l-amazon-orange font-semibold text-foreground";
   const map: Record<string, string> = {
     Critical: "bg-surface-critical hover:bg-surface-critical/80",
     High: "bg-surface-warning hover:bg-surface-warning/80",
