@@ -121,6 +121,12 @@ const Index = () => {
     const persisted = loadPersistedIssues();
     return rebalancePriorities(persisted || defaultIssues);
   });
+  const setIssues = useCallback((updater: Issue[] | ((prev: Issue[]) => Issue[])) => {
+    setIssuesRaw((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      return rebalancePriorities(next);
+    });
+  }, []);
   const [isFetching, setIsFetching] = useState(false);
   const [isSkeletonVisible, setIsSkeletonVisible] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue>(() => {
