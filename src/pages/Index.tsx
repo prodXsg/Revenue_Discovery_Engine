@@ -104,6 +104,11 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [lastUpdated, setLastUpdated] = useState<string | null>(formatTimestamp());
 
+  // Persist issues to localStorage
+  useEffect(() => {
+    localStorage.setItem("discovery-engine-issues", JSON.stringify(issues));
+  }, [issues]);
+
   const handleFetchData = async () => {
     setIsFetching(true);
     setIsSkeletonVisible(true);
