@@ -94,14 +94,14 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
                   onClick={() => onSelect(issue)}
                   className={`cursor-pointer transition-all duration-150 border-b border-border last:border-0 ${rowBg(issue.status, selectedId === issue.id)} ${issue.status === "Muted" ? "opacity-60" : ""}`}
                 >
-                  <td className="px-5 py-3">
+                  <td className="px-5 py-3 text-center">
                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${statusBadge(issue.status)}`}>
-                      {issue.status === "Critical" ? "P0" : issue.status === "High" ? "P1" : "Muted"}
+                      {issue.status === "Critical" ? "P0" : issue.status === "High" ? "P1" : issue.status === "Resolved" ? "Resolved" : "Muted"}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-foreground max-w-xs truncate">{issue.name}</td>
-                  <td className="px-5 py-3 text-right font-mono text-foreground">{issue.vol}</td>
-                  <td className="px-5 py-3 text-right font-mono font-bold text-amazon-orange text-base">
+                  <td className="px-5 py-3 text-center text-foreground max-w-xs truncate">{issue.name}</td>
+                  <td className="px-5 py-3 text-center font-mono text-foreground">{issue.vol}</td>
+                  <td className="px-5 py-3 text-center font-mono font-bold text-amazon-orange text-base">
                     {issue.risk}
                   </td>
                   <td className="px-5 py-3">

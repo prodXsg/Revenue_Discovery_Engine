@@ -1,4 +1,4 @@
-import { TrendingUp, AlertCircle, Filter } from "lucide-react";
+import { TrendingUp, AlertCircle, BarChart3 } from "lucide-react";
 import type { Issue } from "./TriageTable";
 
 interface KPICardsProps {
@@ -6,15 +6,12 @@ interface KPICardsProps {
 }
 
 const KPICards = ({ issues }: KPICardsProps) => {
-  const activeIssues = issues.filter((i) => i.status === "Critical" || i.status === "High");
-  const mutedIssues = issues.filter((i) => i.status === "Muted");
+  const safeIssues = issues || [];
+  const activeIssues = safeIssues.filter((i) => i.status === "Critical" || i.status === "High");
 
   const totalRisk = activeIssues.reduce((sum, i) => sum + i.riskRaw, 0);
   const activeCount = activeIssues.length;
-  const noiseTickets = mutedIssues.reduce((sum, i) => sum + i.vol, 0);
-
-  // Estimate PM hours saved (~30 min per noise ticket)
-  const pmHoursSaved = Math.round(noiseTickets * 0.5);
+  const totalComplaints = safeIssues.reduce((sum, i) => sum + i.vol, 0);
 
   const cards = [
     {
@@ -30,19 +27,19 @@ const KPICards = ({ issues }: KPICardsProps) => {
       title: "Active Friction Themes",
       value: String(activeCount),
       valueClass: "text-amazon-orange",
-      sub: activeCount > 0 ? "Needs triage" : "All clear",
+      sub: null,
       subIcon: AlertCircle,
       subClass: "text-amazon-orange",
       icon: AlertCircle,
     },
     {
-      title: "Noise Tickets Filtered",
-      value: String(noiseTickets),
+      title: "Total Complaints Analyzed",
+      value: String(totalComplaints),
       valueClass: "text-success-green",
-      sub: `Saved ${pmHoursSaved} PM hours`,
-      subIcon: Filter,
+      sub: null,
+      subIcon: BarChart3,
       subClass: "text-success-green",
-      icon: Filter,
+      icon: BarChart3,
     },
   ];
 
@@ -58,10 +55,12 @@ const KPICards = ({ issues }: KPICardsProps) => {
             <c.icon size={16} className={c.subClass} />
           </div>
           <p className={`text-2xl font-bold ${c.valueClass}`}>{c.value}</p>
-          <div className="flex items-center gap-1 mt-2">
-            <c.subIcon size={12} className={c.subClass} />
-            <span className={`text-xs font-medium ${c.subClass}`}>{c.sub}</span>
-          </div>
+          {c.sub && (
+            <div className="flex items-center gap-1 mt-2">
+              <c.subIcon size={12} className={c.subClass} />
+              <span className={`text-xs font-medium ${c.subClass}`}>{c.sub}</span>
+            </div>
+          )}
         </div>
       ))}
     </div>

@@ -78,10 +78,25 @@ const pageVariants = {
 };
 
 const Index = () => {
-  const [issues, setIssues] = useState<Issue[]>(defaultIssues);
+  const [issues, setIssues] = useState<Issue[]>(() => {
+    try {
+      const saved = localStorage.getItem("discovery-engine-issues");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return defaultIssues;
+  });
   const [isFetching, setIsFetching] = useState(false);
   const [isSkeletonVisible, setIsSkeletonVisible] = useState(false);
-  const [selectedIssue, setSelectedIssue] = useState<Issue>(defaultIssues[0]);
+  const [selectedIssue, setSelectedIssue] = useState<Issue>(() => {
+    try {
+      const saved = localStorage.getItem("discovery-engine-issues");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
+      }
+    } catch {}
+    return defaultIssues[0];
+  });
   const [activeTab, setActiveTab] = useState("Correlation Overview");
   const [isJiraModalOpen, setIsJiraModalOpen] = useState(false);
   const [isWBRModalOpen, setIsWBRModalOpen] = useState(false);
