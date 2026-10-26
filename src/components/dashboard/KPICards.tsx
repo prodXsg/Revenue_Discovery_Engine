@@ -1,5 +1,6 @@
 import { TrendingUp, AlertCircle, BarChart3 } from "lucide-react";
 import type { Issue } from "./TriageTable";
+import { formatRevenueIndian } from "@/lib/revenue";
 
 interface KPICardsProps {
   issues: Issue[];
@@ -16,7 +17,7 @@ const KPICards = ({ issues }: KPICardsProps) => {
   const cards = [
     {
       title: "Total Revenue at Risk",
-      value: `₹${totalRisk.toLocaleString("en-IN")}`,
+      value: formatRevenueIndian(totalRisk),
       valueClass: "text-risk-red",
       icon: TrendingUp,
       iconClass: "text-risk-red",

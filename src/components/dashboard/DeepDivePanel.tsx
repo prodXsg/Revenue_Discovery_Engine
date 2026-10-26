@@ -3,6 +3,7 @@ import {
 } from "recharts";
 import { MessageSquareQuote, Sparkles, Check, VolumeX, Volume2, Info, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatRevenueIndian } from "@/lib/revenue";
 import type { Issue } from "./TriageTable";
 
 interface DeepDivePanelProps {
@@ -95,7 +96,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                   <p className="text-muted-foreground/60">Conv Drop: <span className="text-secondary-foreground font-medium">{dropNum}%</span></p>
                   <p className="text-muted-foreground/60">AOV: <span className="text-secondary-foreground font-medium">{issue.aov}</span></p>
                   <p className="text-amazon-orange mt-3 text-sm font-bold">
-                    = {trafficNum.toLocaleString("en-IN")} × {(dropNum / 100).toFixed(4)} × {aovNum.toLocaleString("en-IN")} = ₹{issue.riskRaw.toLocaleString("en-IN")}
+                    = {trafficNum.toLocaleString("en-IN")} × {(dropNum / 100).toFixed(4)} × {aovNum.toLocaleString("en-IN")} = {formatRevenueIndian(issue.riskRaw)}
                   </p>
                 </div>
               </div>
