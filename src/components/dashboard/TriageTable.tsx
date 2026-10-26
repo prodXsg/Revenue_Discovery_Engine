@@ -48,7 +48,15 @@ const statusLabel = (status: string) => {
 };
 
 const rowBg = (status: string, selected: boolean) => {
-  if (selected) return "bg-row-selected border-l-[3px] border-l-amazon-orange font-semibold text-foreground";
+  if (selected) {
+    const selectedMap: Record<string, string> = {
+      Critical: "bg-surface-critical border-l-risk-red",
+      High: "bg-surface-warning border-l-priority-high",
+      Low: "bg-muted border-l-muted-foreground",
+      Muted: "bg-muted border-l-muted-foreground",
+    };
+    return `${selectedMap[status] || "bg-muted border-l-muted-foreground"} border-l-[3px] font-semibold text-foreground`;
+  }
   const map: Record<string, string> = {
     Critical: "bg-surface-critical hover:bg-surface-critical/80",
     High: "bg-surface-warning hover:bg-surface-warning/80",
@@ -93,7 +101,7 @@ const TriageTable = ({ issues, selectedId, onSelect, totalIssuesCount = 0 }: Tri
                 <th className="text-center px-5 py-2.5 font-medium">Priority</th>
                 <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
                 <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
-                <th className="text-right px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
+                <th className="text-right px-5 py-2.5 font-medium text-foreground">Revenue at Risk</th>
                 <th className="text-right px-5 py-2.5 font-medium">Date Detected</th>
               </tr>
             </thead>
@@ -111,7 +119,7 @@ const TriageTable = ({ issues, selectedId, onSelect, totalIssuesCount = 0 }: Tri
                   </td>
                   <td className="px-5 py-3 text-left text-foreground max-w-xs truncate">{issue.name}</td>
                   <td className="px-5 py-3 text-right font-tabular-nums text-foreground">{issue.vol}</td>
-                  <td className="px-5 py-3 text-right font-tabular-nums font-bold text-amazon-orange text-base">
+                  <td className="px-5 py-3 text-right font-tabular-nums font-bold text-foreground text-base">
                     {issue.risk}
                   </td>
                   <td className="px-5 py-3 text-right text-muted-foreground text-xs">
