@@ -3,7 +3,7 @@
 <hr>
 
 <p align="center">
-  <img src="RDE.png" alt="Revenue Discovery Engine dashboard" width="900">
+  <img src="RDE.png" alt="Revenue Discovery Engine dashboard" width="350">
 </p>
 
 An AI-powered product discovery tool for Amazon PMs that identifies customer pain points, estimates potential revenue at risk, and ranks product opportunities by business impact rather than complaint volume.
