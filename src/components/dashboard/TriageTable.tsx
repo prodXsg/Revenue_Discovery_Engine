@@ -22,6 +22,7 @@ interface TriageTableProps {
   issues: Issue[];
   selectedId: number;
   onSelect: (issue: Issue) => void;
+  totalIssuesCount?: number;
 }
 
 const statusBadge = (status: string) => {
@@ -57,7 +58,10 @@ const rowBg = (status: string, selected: boolean) => {
   return `border-l-[3px] border-l-transparent ${map[status] || ""}`;
 };
 
-const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
+const TriageTable = ({ issues, selectedId, onSelect, totalIssuesCount = 0 }: TriageTableProps) => {
+  const isNoDataLoaded = totalIssuesCount === 0;
+  const isSearchFiltered = issues.length === 0 && totalIssuesCount > 0;
+
   return (
     <div className="bg-card rounded border border-border shadow-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border">
@@ -69,8 +73,17 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
           <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
             <SearchX size={24} className="text-muted-foreground" />
           </div>
-          <p className="text-sm font-semibold text-foreground mb-1">No friction themes match your search</p>
-          <p className="text-xs text-muted-foreground">Try adjusting your search query or clearing filters.</p>
+          {isNoDataLoaded ? (
+            <>
+              <p className="text-sm font-semibold text-foreground mb-1">No issues loaded</p>
+              <p className="text-xs text-muted-foreground">Click Fetch New Data to load issues or use sample data.</p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-foreground mb-1">No themes match your search</p>
+              <p className="text-xs text-muted-foreground">Try adjusting your search query or clearing filters.</p>
+            </>
+          )}
         </div>
       ) : (
         <div className="max-h-[400px] overflow-y-auto scrollbar-thin">

@@ -353,7 +353,7 @@ const Index = () => {
       return (
         <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="space-y-5">
           {sidebarItem === "dashboard" && <KPICards issues={issues} />}
-          <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
+          <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} totalIssuesCount={issues.length} />
           {filteredIssues.length > 0 && (
             <DeepDivePanel
               key={selectedIssue.id}
