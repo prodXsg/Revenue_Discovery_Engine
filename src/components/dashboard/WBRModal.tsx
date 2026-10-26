@@ -1,4 +1,5 @@
 import { X, Printer, FileText } from "lucide-react";
+import { appConfig } from "@/config/app";
 import type { Issue } from "./TriageTable";
 
 interface WBRModalProps {
@@ -54,10 +55,10 @@ const WBRModal = ({ issue, isOpen, onClose }: WBRModalProps) => {
           {/* Header Block */}
           <div className="border-b-2 border-amazon-orange pb-6">
             <div className="flex items-center justify-between text-xs text-muted-foreground font-medium uppercase tracking-wider mb-4">
-              <span>Amazon India</span>
+              <span>{appConfig.workspace.name}</span>
               <span>Weekly Business Review (WBR)</span>
               <span>Date: {today}</span>
-              <span>Owner: Surya G.</span>
+              <span>Owner: {appConfig.workspace.user}</span>
             </div>
             <h1 className="text-xl font-bold text-foreground tracking-tight">
               Friction Triage: {issue.name}
