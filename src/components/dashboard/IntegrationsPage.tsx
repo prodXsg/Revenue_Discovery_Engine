@@ -3,7 +3,7 @@ import { AlertCircle, CheckCircle2 } from "lucide-react";
 const integrations = [
   { name: "Zendesk", desc: "Customer support ticket ingestion", icon: "🎫", status: "Not connected", statusType: "planned" as const },
   { name: "Mixpanel", desc: "Product analytics & funnel data", icon: "📊", status: "Not connected", statusType: "planned" as const },
-  { name: "Jira", desc: "Issue tracking & epic creation", icon: "📋", status: "Not connected", statusType: "planned" as const },
+  { name: "Jira", desc: "Issue tracking & draft export", icon: "📋", status: "Not connected", statusType: "planned" as const },
   { name: "Slack", desc: "Real-time alert notifications", icon: "💬", status: "Not connected", statusType: "planned" as const },
 ];
 
