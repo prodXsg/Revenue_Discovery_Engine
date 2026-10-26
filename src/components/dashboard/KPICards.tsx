@@ -17,6 +17,7 @@ const KPICards = ({ issues }: KPICardsProps) => {
   const cards = [
     {
       title: "Total Revenue at Risk",
+      caption: "Weekly leakage from active issues",
       value: formatRevenueIndian(totalRisk),
       valueClass: "text-risk-red",
       icon: TrendingUp,
@@ -24,6 +25,7 @@ const KPICards = ({ issues }: KPICardsProps) => {
     },
     {
       title: "Active Friction Themes",
+      caption: "Issues requiring action",
       value: String(activeCount),
       valueClass: "text-amazon-orange",
       icon: AlertCircle,
@@ -31,6 +33,7 @@ const KPICards = ({ issues }: KPICardsProps) => {
     },
     {
       title: "Total Complaints Analyzed",
+      caption: "Customer feedback items processed",
       value: String(totalComplaints),
       valueClass: "text-success-green",
       icon: BarChart3,
@@ -43,13 +46,14 @@ const KPICards = ({ issues }: KPICardsProps) => {
       {cards.map((c) => (
         <div
           key={c.title}
-          className="bg-card rounded border border-border p-5 shadow-sm hover:shadow-md transition-shadow text-center"
+          className="bg-card rounded border border-border p-6 shadow-sm hover:shadow-md transition-shadow text-center cursor-default"
         >
           <div className="flex items-center justify-center mb-3">
-            <c.icon size={16} className={c.iconClass} />
+            <c.icon size={18} className={c.iconClass} />
           </div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">{c.title}</p>
-          <p className={`text-2xl font-bold ${c.valueClass}`}>{c.value}</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{c.title}</p>
+          <p className={`text-3xl font-bold ${c.valueClass} mb-2`}>{c.value}</p>
+          <p className="text-xs text-muted-foreground">{c.caption}</p>
         </div>
       ))}
     </div>

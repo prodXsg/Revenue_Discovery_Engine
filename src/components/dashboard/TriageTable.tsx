@@ -91,10 +91,10 @@ const TriageTable = ({ issues, selectedId, onSelect, totalIssuesCount = 0 }: Tri
             <thead className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm">
               <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
                 <th className="text-center px-5 py-2.5 font-medium">Priority</th>
-                <th className="text-center px-5 py-2.5 font-medium">Theme Name</th>
-                <th className="text-center px-5 py-2.5 font-medium">Tickets</th>
-                <th className="text-center px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
-                <th className="text-center px-5 py-2.5 font-medium">Date Detected</th>
+                <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
+                <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
+                <th className="text-right px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
+                <th className="text-right px-5 py-2.5 font-medium">Date Detected</th>
               </tr>
             </thead>
             <tbody>
@@ -109,12 +109,12 @@ const TriageTable = ({ issues, selectedId, onSelect, totalIssuesCount = 0 }: Tri
                       {statusLabel(issue.status)}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-center text-foreground max-w-xs truncate">{issue.name}</td>
-                  <td className="px-5 py-3 text-center font-mono text-foreground">{issue.vol}</td>
-                  <td className="px-5 py-3 text-center font-mono font-bold text-amazon-orange text-base">
+                  <td className="px-5 py-3 text-left text-foreground max-w-xs truncate">{issue.name}</td>
+                  <td className="px-5 py-3 text-right font-tabular-nums text-foreground">{issue.vol}</td>
+                  <td className="px-5 py-3 text-right font-tabular-nums font-bold text-amazon-orange text-base">
                     {issue.risk}
                   </td>
-                  <td className="px-5 py-3 text-center text-muted-foreground text-xs">
+                  <td className="px-5 py-3 text-right text-muted-foreground text-xs">
                     {issue.dateDetected || "—"}
                   </td>
                 </tr>

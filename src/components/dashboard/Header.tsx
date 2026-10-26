@@ -44,7 +44,7 @@ const Header = ({ isFetching, onFetch, searchQuery, onSearchChange, lastUpdated,
         <button
           onClick={onFetch}
           disabled={isFetching}
-          className="h-8 px-4 rounded bg-amazon-orange text-primary-foreground text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-70"
+          className="h-8 px-4 rounded bg-amazon-orange text-primary-foreground text-sm font-medium flex items-center gap-2 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-amazon-orange focus:ring-offset-2 transition-opacity disabled:opacity-70"
         >
           <RefreshCw size={14} className={isFetching ? "animate-spin-slow" : ""} />
           {isFetching ? "Running AI Triage..." : "Fetch New Data"}
