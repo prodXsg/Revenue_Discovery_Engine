@@ -12,8 +12,6 @@ An AI-powered product discovery tool for Amazon PMs that identifies customer pai
 
 ## The Problem
 
-## The Problem
-
 Product teams receive customer feedback from multiple sources, but complaint volume alone does not reveal which problems matter most to the business.
 
 Without a consistent way to connect customer pain points to conversion and revenue impact, prioritization can become reactive. High-impact issues may be overlooked, while teams spend significant time manually analyzing feedback across support systems, analytics tools, and spreadsheets.
