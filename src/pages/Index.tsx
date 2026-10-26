@@ -72,11 +72,21 @@ const pageVariants = {
 
 const STORAGE_KEY = "discovery-engine-issues";
 
+interface N8nIssueData {
+  name: string;
+  total_revenue_risk_inr: number;
+  ticket_count: number;
+  quotes: string[];
+  root_cause: string;
+}
+
 const loadPersistedIssues = (): Issue[] | null => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
-  } catch {}
+  } catch (err) {
+    console.warn('Failed to load persisted issues:', err);
+  }
   return null;
 };
 
@@ -114,7 +124,7 @@ const Index = () => {
   useEffect(() => {
     const updated = issues.find((i) => i.id === selectedIssue.id);
     if (updated) setSelectedIssue(updated);
-  }, [issues]);
+  }, [issues, selectedIssue.id]);
 
   const handleFetchData = async () => {
     const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
@@ -159,11 +169,11 @@ const Index = () => {
         const detectedDate = formatDetectedDate();
 
         // Sort by revenue risk descending before mapping
-        const sortedArray = [...rawArray].sort((a: any, b: any) =>
+        const sortedArray = [...(rawArray as N8nIssueData[])].sort((a: N8nIssueData, b: N8nIssueData) =>
           (b.total_revenue_risk_inr || 0) - (a.total_revenue_risk_inr || 0)
         );
 
-        const formattedIssues: Issue[] = sortedArray.map((item: any, index: number) => {
+        const formattedIssues: Issue[] = sortedArray.map((item: N8nIssueData, index: number) => {
           const existing = existingMap.get(item.name);
           const riskRaw = item.total_revenue_risk_inr || 0;
           const vol = item.ticket_count || 0;
