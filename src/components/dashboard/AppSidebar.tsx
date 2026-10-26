@@ -8,6 +8,8 @@ import {
   FileBarChart,
   CheckCircle2,
 } from "lucide-react";
+import { getInitials } from "@/lib/utils";
+import { appConfig } from "@/config/app";
 
 interface SidebarProps {
   activeItem: string;
@@ -60,12 +62,12 @@ const AppSidebar = ({ activeItem, onItemClick, activeRiskCount = 0, mutedNoiseCo
       <div className="px-4 py-4 border-t border-squid-ink-light flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-amazon-orange flex items-center justify-center text-primary-foreground text-xs font-bold">
-            SG
+            {getInitials(appConfig.workspace.user)}
           </div>
           <div>
-            <p className="text-sm font-semibold text-secondary-foreground">Surya G.</p>
-            <p className="text-[11px] text-sidebar-foreground">Amazon India</p>
-            <p className="text-[10px] text-amazon-orange font-medium">Enterprise Plan</p>
+            <p className="text-sm font-semibold text-secondary-foreground">{appConfig.workspace.user}</p>
+            <p className="text-[11px] text-sidebar-foreground">{appConfig.workspace.name}</p>
+            <p className="text-[10px] text-amazon-orange font-medium">{appConfig.plan}</p>
           </div>
         </div>
         <button className="text-sidebar-foreground hover:text-secondary-foreground transition-colors">
