@@ -27,9 +27,9 @@ const KPICards = ({ issues }: KPICardsProps) => {
       title: "Active Friction Themes",
       caption: "Issues requiring action",
       value: String(activeCount),
-      valueClass: "text-amazon-orange",
+      valueClass: "text-foreground",
       icon: AlertCircle,
-      iconClass: "text-amazon-orange",
+      iconClass: "text-muted-foreground",
     },
     {
       title: "Total Complaints Analyzed",

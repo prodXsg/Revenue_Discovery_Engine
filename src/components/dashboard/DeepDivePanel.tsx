@@ -129,7 +129,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                     <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
                     <RechartsTooltip contentStyle={{ fontSize: 12, borderRadius: 4 }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar yAxisId="left" dataKey="tickets" fill="hsl(33, 100%, 50%)" name="Tickets" radius={[2, 2, 0, 0]} />
+                    <Bar yAxisId="left" dataKey="tickets" fill="hsl(215, 16%, 47%)" name="Tickets" radius={[2, 2, 0, 0]} />
                     <Line yAxisId="right" type="monotone" dataKey="conversion" stroke="hsl(0, 84%, 60%)" name="Conv %" strokeWidth={2} dot={{ r: 3 }} />
                   </ComposedChart>
                 </ResponsiveContainer>

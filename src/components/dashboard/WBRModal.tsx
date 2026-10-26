@@ -30,7 +30,7 @@ const WBRModal = ({ issue, isOpen, onClose }: WBRModalProps) => {
         {/* Top Bar */}
         <div className="sticky top-0 z-10 bg-card border-b border-border px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <FileText size={18} className="text-amazon-orange" />
+            <FileText size={18} className="text-muted-foreground" />
             <span className="text-sm font-bold text-foreground tracking-tight">Weekly Business Review</span>
           </div>
           <div className="flex items-center gap-2">
@@ -53,7 +53,7 @@ const WBRModal = ({ issue, isOpen, onClose }: WBRModalProps) => {
         {/* A4-Style Content */}
         <div className="px-10 py-8 space-y-8">
           {/* Header Block */}
-          <div className="border-b-2 border-amazon-orange pb-6">
+          <div className="border-b-2 border-muted pb-6">
             <div className="flex items-center justify-between text-xs text-muted-foreground font-medium uppercase tracking-wider mb-4">
               <span>{appConfig.workspace.name}</span>
               <span>Weekly Business Review (WBR)</span>
