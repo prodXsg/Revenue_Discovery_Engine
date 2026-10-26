@@ -90,12 +90,13 @@ export const defaultIssues: Issue[] = [
   },
 ];
 
+// Sample data. Totals are computed from these rows.
 export const pastReports = [
-  { week: "W10 2026 (Mar 2-8)", risks: 4, averted: 18000000, status: "Resolved" },
-  { week: "W09 2026 (Feb 23-Mar 1)", risks: 3, averted: 21000000, status: "Resolved" },
-  { week: "W08 2026 (Feb 16-22)", risks: 5, averted: 14000000, status: "Resolved" },
-  { week: "W07 2026 (Feb 9-15)", risks: 2, averted: 32000000, status: "Resolved" },
-  { week: "W06 2026 (Feb 2-8)", risks: 6, averted: 29000000, status: "Resolved" },
+  { week: "W10 2026 (Mar 2-8)", risks: 4, averted: 22400000, status: "Resolved" },
+  { week: "W09 2026 (Feb 23-Mar 1)", risks: 3, averted: 26200000, status: "Resolved" },
+  { week: "W08 2026 (Feb 16-22)", risks: 5, averted: 17400000, status: "Resolved" },
+  { week: "W07 2026 (Feb 9-15)", risks: 2, averted: 39900000, status: "Resolved" },
+  { week: "W06 2026 (Feb 2-8)", risks: 6, averted: 36100000, status: "Resolved" },
 ];
 
 export const sampleNotifications = [
