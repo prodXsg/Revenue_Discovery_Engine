@@ -1,6 +1,12 @@
 <h1 align="center">Revenue Discovery Engine for Amazon PMs</h1>
 
-An AI-powered product discovery tool for Amazon PMs that finds where customers are struggling, sizes what each problem costs in revenue, and ranks what to fix first. It orders customer friction by revenue at risk, not complaint volume, so a small payment failure can outrank a large cosmetic complaint.
+<p align="center">
+  <a href="https://revenue-discovery.lovable.app">View Live Project</a>
+</p>
+
+An AI-powered product discovery tool for Amazon PMs that identifies customer pain points, estimates potential revenue at risk, and ranks product opportunities by business impact rather than complaint volume.
+
+---
 
 ## The Problem
 
@@ -8,29 +14,29 @@ Product teams receive customer feedback from multiple sources, but complaint vol
 
 Without a consistent way to connect customer pain points to conversion and revenue impact, prioritization can become reactive. High-impact issues may be overlooked, while teams spend significant time manually analyzing feedback across support systems, analytics tools, and spreadsheets.
 
-**The opportunity:** Help product managers identify the problems worth solving first by combining customer insights, root-cause analysis, and estimated business impact.
+**The opportunity:** Help product managers identify which problems to solve first by combining customer insights, root-cause analysis, and estimated business impact.
 
 ## What It Does
 
 Revenue Discovery Engine transforms customer feedback into a revenue-weighted view of product opportunities.
 
-1. **Ingests customer feedback** from support tickets and complaint data.
-2. **Masks personal information** before customer text is processed by the language model.
-3. **Quantifies revenue at risk** using deterministic calculations based on traffic, conversion drop, and average order value.
-4. **Identifies root-cause themes** by grouping related complaints using a local LLM, Llama 3 via Ollama.
-5. **Prioritizes product opportunities** by estimated revenue at risk rather than complaint volume alone.
-6. **Makes decisions traceable** through supporting calculations, customer quotes, and conversion charts.
-7. **Supports backlog refinement** by generating Jira-ready drafts with a summary, business value, and description.
+1. **Customer feedback ingestion:** Reads customer complaints and support ticket data.
+2. **PII masking:** Masks personal information before customer text is processed by the language model.
+3. **Revenue impact estimation:** Calculates revenue at risk using deterministic logic based on traffic, conversion drop, and average order value.
+4. **Root-cause analysis:** Groups related complaints into themes using Llama 3 through Ollama.
+5. **Revenue-weighted prioritization:** Ranks problem themes by estimated revenue at risk rather than complaint volume alone.
+6. **Evidence-backed decisions:** Displays calculations, customer quotes, and conversion charts to explain each priority.
+7. **Backlog refinement:** Generates Jira-ready drafts containing a summary, business value, and description.
 
 ## Product Management Principles
 
-- **Prioritize impact over volume.** Evaluate customer problems by their estimated business impact, not just how often they are reported.
-- **Keep financial calculations deterministic.** Revenue estimates are computed in application code, making the calculation logic transparent and traceable.
-- **Use AI for synthesis, not arithmetic.** The LLM identifies recurring themes; it does not generate the revenue figures.
-- **Make decisions evidence-based.** Show the underlying calculations and customer feedback so teams can inspect the reasoning behind each priority.
-- **Connect discovery to execution.** Convert identified opportunities into structured drafts that support backlog refinement and stakeholder alignment.
+- **Prioritize impact over volume:** Evaluate customer problems by their estimated business impact, not just how often they are reported.
+- **Keep calculations deterministic:** Compute revenue estimates in application code so the logic remains transparent and traceable.
+- **Use AI for synthesis, not arithmetic:** Use the LLM to identify recurring themes without relying on it to generate revenue figures.
+- **Make decisions evidence-based:** Present supporting calculations and customer feedback so stakeholders can inspect the rationale behind each priority.
+- **Connect discovery to execution:** Translate identified opportunities into structured drafts that support backlog refinement and stakeholder alignment.
 
-## Data Sources
+## Data Sources and Integrations
 
 - **Zendesk:** Reads exported ticket data in Zendesk's JSON format. This is file-based ingestion, not a live Zendesk API integration.
 - **Google Sheets:** Serves as the working data source in the current n8n workflow.
@@ -38,7 +44,7 @@ Revenue Discovery Engine transforms customer feedback into a revenue-weighted vi
 
 ## Architecture
 
-**Workflow orchestration:**
+**Workflow orchestration**
 
 Manual trigger / webhook / daily schedule → Google Sheets → PII masking → deterministic revenue calculation → aggregation → Ollama (Llama 3) theme classification → merge and rank → webhook response.
 
@@ -46,11 +52,11 @@ The workflow separates deterministic business calculations from AI-assisted comp
 
 ## Key Product Metrics
 
-The following metrics can help evaluate whether the approach improves product decision-making:
+The following metrics can help evaluate whether the tool improves product decision-making:
 
 - **Prioritization quality:** How closely revenue-weighted rankings align with expert-reviewed business impact.
 - **Classification quality:** Precision and recall of root-cause themes against human-labelled complaints.
-- **Time to insight:** Time required to move from raw customer feedback to a prioritized set of opportunities.
+- **Time to insight:** Time required to turn raw customer feedback into prioritized opportunities.
 - **Decision traceability:** Whether each priority has inspectable calculations and supporting customer evidence.
 - **Actionability:** Whether prioritized opportunities lead to documented product decisions or backlog items.
 
@@ -62,7 +68,15 @@ These are proposed evaluation metrics, not measured outcomes.
 - **PII masking:** Personal information is masked before model processing. Masking effectiveness still requires validation.
 - **Transparent calculations:** Revenue estimates are computed in code rather than generated by the LLM.
 - **Human review:** Revenue estimates and AI-generated themes should be reviewed before informing significant business decisions.
-- **Production readiness:** A production deployment would require further validation of data quality, access controls, privacy protections, and model performance.
+- **Production readiness:** Production deployment would require further validation of data quality, access controls, privacy protections, and model performance.
+
+## Tech Stack
+
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS
+- **AI and NLP:** Llama 3, Ollama
+- **Workflow orchestration:** n8n
+- **Data source:** Google Sheets
+- **Integrations:** Webhooks, with Zendesk and Mixpanel planned
 
 ## Running Locally
 
