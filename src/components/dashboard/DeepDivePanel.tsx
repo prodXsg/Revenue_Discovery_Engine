@@ -122,14 +122,14 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Ticket Spike vs Conversion Drop</p>
                 <ResponsiveContainer width="100%" height={220}>
-                  <ComposedChart data={chartData}>
+                  <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 32%, 91%)" />
                     <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
                     <YAxis yAxisId="left" label={{ value: 'Tickets', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
                     <YAxis yAxisId="right" orientation="right" label={{ value: 'Conversion %', angle: 90, position: 'insideRight' }} domain={[0, 'auto']} tickFormatter={(value) => `${value.toFixed(1)}%`} tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
                     <RechartsTooltip contentStyle={{ fontSize: 12, borderRadius: 4 }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar yAxisId="left" dataKey="tickets" fill="hsl(215, 16%, 47%)" name="Tickets" radius={[2, 2, 0, 0]} />
+                    <Bar yAxisId="left" dataKey="tickets" fill="hsl(33, 100%, 50%)" name="Tickets" radius={[2, 2, 0, 0]} />
                     <Line yAxisId="right" type="monotone" dataKey="conversion" stroke="hsl(0, 84%, 60%)" name="Conv %" strokeWidth={2} dot={{ r: 3 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
