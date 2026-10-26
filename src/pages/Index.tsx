@@ -13,6 +13,7 @@ import SettingsPage from "@/components/dashboard/SettingsPage";
 import IntegrationsPage from "@/components/dashboard/IntegrationsPage";
 import ReportsPage from "@/components/dashboard/ReportsPage";
 import type { Issue } from "@/components/dashboard/TriageTable";
+import { defaultIssues } from "@/data/sampleData";
 
 const formatDetectedDate = () =>
   new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -56,44 +57,6 @@ const rebalancePriorities = (allIssues: Issue[]): Issue[] => {
   });
 };
 
-const defaultIssues: Issue[] = [
-  {
-    id: 1, name: "iOS 17 UPI Biometric Freeze & Core App Crashes", risk: "₹54,68,400", riskRaw: 5468400, vol: 24, status: "Critical", trend: "up", traffic: "45,000", drop: "-1.4%", aov: "₹1,200",
-    quotes: ["App crashes when opening cart with 10+ items", "Search results not sorted properly."],
-    rootCause: "App crash when attempting UPI biometric authentication on iOS 17. Biometric SDK incompatibility with iOS 17 security sandbox causing payment flow to freeze and crash. Affects 68% of iOS 17 users attempting UPI payments.",
-    dateDetected: formatDetectedDate(),
-    chartData: [
-      { day: "Mon", tickets: 2, conversion: 3.8 }, { day: "Tue", tickets: 5, conversion: 3.5 },
-      { day: "Wed", tickets: 8, conversion: 3.0 }, { day: "Thu", tickets: 14, conversion: 2.6 },
-      { day: "Fri", tickets: 20, conversion: 2.1 }, { day: "Sat", tickets: 28, conversion: 1.7 },
-      { day: "Sun", tickets: 34, conversion: 1.2 },
-    ],
-  },
-  {
-    id: 2, name: "Order and Payment Issues", risk: "₹44,77,880", riskRaw: 4477880, vol: 13, status: "High", trend: "up", traffic: "32,000", drop: "-1.1%", aov: "₹1,200",
-    quotes: ["Payment failed but charged twice.", "Refund initiated but money not received."],
-    rootCause: "Payment gateway timeout causing double-charge on retry. The retry logic in the payment microservice does not check idempotency keys, leading to duplicate transactions during peak load windows (6–9 PM IST).",
-    dateDetected: formatDetectedDate(),
-    chartData: [
-      { day: "Mon", tickets: 1, conversion: 4.2 }, { day: "Tue", tickets: 2, conversion: 4.0 },
-      { day: "Wed", tickets: 3, conversion: 3.8 }, { day: "Thu", tickets: 5, conversion: 3.5 },
-      { day: "Fri", tickets: 7, conversion: 3.2 }, { day: "Sat", tickets: 10, conversion: 2.9 },
-      { day: "Sun", tickets: 13, conversion: 2.6 },
-    ],
-  },
-  {
-    id: 3, name: "Deprioritized Noise: Design and Visual Issues", risk: "₹0", riskRaw: 0, vol: 35, status: "Low", trend: "flat", traffic: "50,000", drop: "0.0%", aov: "₹500",
-    quotes: ["Homepage colors bilkul bakwas.", "Colors absolutely terrible."],
-    rootCause: "Cosmetic complaints about color scheme and font rendering on low-DPI Android devices. No measurable conversion or revenue impact detected. Classified as noise by the AI triage engine.",
-    dateDetected: formatDetectedDate(),
-    chartData: [
-      { day: "Mon", tickets: 5, conversion: 4.1 }, { day: "Tue", tickets: 5, conversion: 4.1 },
-      { day: "Wed", tickets: 6, conversion: 4.0 }, { day: "Thu", tickets: 5, conversion: 4.1 },
-      { day: "Fri", tickets: 4, conversion: 4.1 }, { day: "Sat", tickets: 5, conversion: 4.0 },
-      { day: "Sun", tickets: 5, conversion: 4.1 },
-    ],
-  },
-];
 
 const formatTimestamp = () => {
   return new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })

@@ -1,14 +1,9 @@
 import { TrendingUp, Calendar, FileBarChart } from "lucide-react";
-
-const pastReports = [
-  { week: "W10 2026 (Mar 2–8)", risks: 4, averted: "₹1.8 Cr", status: "Resolved" },
-  { week: "W09 2026 (Feb 23–Mar 1)", risks: 3, averted: "₹2.1 Cr", status: "Resolved" },
-  { week: "W08 2026 (Feb 16–22)", risks: 5, averted: "₹1.4 Cr", status: "Resolved" },
-  { week: "W07 2026 (Feb 9–15)", risks: 2, averted: "₹3.2 Cr", status: "Resolved" },
-  { week: "W06 2026 (Feb 2–8)", risks: 6, averted: "₹2.9 Cr", status: "Resolved" },
-];
+import { pastReports, computeYTDAvertedLeakage } from "@/data/sampleData";
 
 const ReportsPage = () => {
+  const ytdLeakage = computeYTDAvertedLeakage();
+  const ytdDisplay = (ytdLeakage / 10000000).toFixed(1) + " Cr";
   return (
     <div className="space-y-6">
       <div>
@@ -23,8 +18,8 @@ const ReportsPage = () => {
         </div>
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Total Averted Revenue Leakage (YTD)</p>
-          <p className="text-3xl font-bold text-foreground tracking-tight mt-1">₹14.2 Crores</p>
-          <p className="text-xs text-success-green font-semibold mt-1">↑ 23% improvement vs last quarter</p>
+          <p className="text-3xl font-bold text-foreground tracking-tight mt-1">₹{ytdDisplay}</p>
+          <p className="text-xs text-success-green font-semibold mt-1">Sample data. 23% improvement vs last quarter.</p>
         </div>
       </div>
 

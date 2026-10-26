@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Bell, RefreshCw } from "lucide-react";
+import { sampleNotifications } from "@/data/sampleData";
 
 interface HeaderProps {
   isFetching: boolean;
@@ -10,22 +11,12 @@ interface HeaderProps {
   isUsingDemoData: boolean;
 }
 
-const notifications = [
-  { id: 1, message: "23 new customer complaints added", time: "2 minutes ago", unread: true },
-  { id: 2, message: "Conversion drop detected for Checkout flow", time: "5 minutes ago", unread: true },
-  { id: 3, message: "Revenue risk updated to ₹54,68,400/week", time: "12 minutes ago", unread: true },
-  { id: 4, message: "New issue created in Jira", time: "30 minutes ago", unread: true },
-  { id: 5, message: "Spike detected in payment failure complaints", time: "1 hour ago", unread: true },
-  { id: 6, message: "iOS 17 UPI crash reports trending up", time: "2 hours ago", unread: false },
-  { id: 7, message: "Weekly triage report ready for review", time: "3 hours ago", unread: false },
-];
-
 const Header = ({ isFetching, onFetch, searchQuery, onSearchChange, lastUpdated, isUsingDemoData }: HeaderProps) => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [readIds, setReadIds] = useState<Set<number>>(new Set());
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter((n) => n.unread && !readIds.has(n.id)).length;
+  const unreadCount = sampleNotifications.filter((n) => n.unread && !readIds.has(n.id)).length;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -90,7 +81,7 @@ const Header = ({ isFetching, onFetch, searchQuery, onSearchChange, lastUpdated,
                 <p className="text-sm font-bold text-foreground">Notifications</p>
               </div>
               <div className="max-h-80 overflow-y-auto scrollbar-thin">
-                {notifications.map((n) => {
+                {sampleNotifications.map((n) => {
                   const isUnread = n.unread && !readIds.has(n.id);
                   return (
                     <button
