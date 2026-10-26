@@ -104,9 +104,9 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
 
                 <p className="text-secondary-foreground text-[13px] leading-relaxed">
                   <span className="text-muted-foreground/70">[</span>Traffic<span className="text-muted-foreground/70">]</span>
-                  <span className="text-amazon-orange mx-1">×</span>
+                  <span className="text-muted-foreground mx-1">×</span>
                   <span className="text-muted-foreground/70">[</span>Conv. Drop %<span className="text-muted-foreground/70">]</span>
-                  <span className="text-amazon-orange mx-1">×</span>
+                  <span className="text-muted-foreground mx-1">×</span>
                   <span className="text-muted-foreground/70">[</span>AOV<span className="text-muted-foreground/70">]</span>
                 </p>
                 <div className="border-t border-squid-ink-light mt-4 pt-4 space-y-1.5 text-xs">
@@ -138,7 +138,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
 
             <div className="bg-background border border-border rounded-lg p-5">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles size={14} className="text-amazon-orange" />
+                <Sparkles size={14} className="text-muted-foreground" />
                 <p className="text-xs font-bold text-foreground uppercase tracking-wide">Discovered Root Cause & Insights</p>
                 <TooltipProvider>
                   <Tooltip>
@@ -225,7 +225,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
               issue.quotes.map((q, i) => (
                 <div key={i} className="border border-border rounded-lg p-4 bg-background hover:shadow-sm transition-shadow">
                   <div className="flex items-start gap-3">
-                    <MessageSquareQuote size={16} className="text-amazon-orange mt-0.5 shrink-0" />
+                    <MessageSquareQuote size={16} className="text-muted-foreground mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm text-foreground italic">"{q}"</p>
                       <div className="flex items-center gap-3 mt-3">

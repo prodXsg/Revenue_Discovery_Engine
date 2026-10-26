@@ -35,7 +35,7 @@ const SettingsPage = () => {
           {/* Data Privacy */}
           <div className="bg-card border border-border rounded-lg p-5">
             <div className="flex items-center gap-3 mb-4">
-              <Shield size={18} className="text-amazon-orange" />
+              <Shield size={18} className="text-muted-foreground" />
               <h3 className="text-sm font-bold text-foreground">Data Privacy</h3>
             </div>
             <div className="flex items-center justify-between py-3 border-b border-border">
@@ -50,7 +50,7 @@ const SettingsPage = () => {
           {/* LLM Provider */}
           <div className="bg-card border border-border rounded-lg p-5">
             <div className="flex items-center gap-3 mb-4">
-              <Brain size={18} className="text-amazon-orange" />
+              <Brain size={18} className="text-muted-foreground" />
               <h3 className="text-sm font-bold text-foreground">LLM Provider</h3>
             </div>
             <div className="space-y-2">
@@ -78,7 +78,7 @@ const SettingsPage = () => {
           {/* Notifications */}
           <div className="bg-card border border-border rounded-lg p-5">
             <div className="flex items-center gap-3 mb-4">
-              <BellRing size={18} className="text-amazon-orange" />
+              <BellRing size={18} className="text-muted-foreground" />
               <h3 className="text-sm font-bold text-foreground">Notification Preferences</h3>
             </div>
             <div className="space-y-3">
@@ -103,7 +103,7 @@ const SettingsPage = () => {
           {/* Jira Integration Defaults */}
           <div className="bg-card border border-border rounded-lg p-5">
             <div className="flex items-center gap-3 mb-4">
-              <Link2 size={18} className="text-amazon-orange" />
+              <Link2 size={18} className="text-muted-foreground" />
               <h3 className="text-sm font-bold text-foreground">Jira Integration Defaults</h3>
             </div>
             <div className="space-y-4">
@@ -139,7 +139,7 @@ const SettingsPage = () => {
           {/* Data Retention Policy */}
           <div className="bg-card border border-border rounded-lg p-5">
             <div className="flex items-center gap-3 mb-4">
-              <Database size={18} className="text-amazon-orange" />
+              <Database size={18} className="text-muted-foreground" />
               <h3 className="text-sm font-bold text-foreground">Data Retention Policy</h3>
             </div>
             <div className="space-y-2">
@@ -167,7 +167,7 @@ const SettingsPage = () => {
           {/* Access Control */}
           <div className="bg-card border border-border rounded-lg p-5">
             <div className="flex items-center gap-3 mb-4">
-              <Lock size={18} className="text-amazon-orange" />
+              <Lock size={18} className="text-muted-foreground" />
               <h3 className="text-sm font-bold text-foreground">Access Control</h3>
             </div>
             <div className="flex items-center justify-between py-3 border-b border-border">
@@ -182,7 +182,7 @@ const SettingsPage = () => {
           {/* Theme / Dark Mode */}
           <div className="bg-card border border-border rounded-lg p-5">
             <div className="flex items-center gap-3 mb-4">
-              {theme === "dark" ? <Moon size={18} className="text-amazon-orange" /> : <Sun size={18} className="text-amazon-orange" />}
+              {theme === "dark" ? <Moon size={18} className="text-muted-foreground" /> : <Sun size={18} className="text-muted-foreground" />}
               <h3 className="text-sm font-bold text-foreground">Appearance</h3>
             </div>
             <div className="flex items-center justify-between py-3">

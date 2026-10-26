@@ -89,7 +89,7 @@ const WBRModal = ({ issue, isOpen, onClose }: WBRModalProps) => {
           {/* Section 2: Root Cause */}
           <div>
             <h2 className="text-sm font-bold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 rounded bg-amazon-orange/10 text-amazon-orange text-xs font-bold flex items-center justify-center">2</span>
+              <span className="w-6 h-6 rounded bg-muted text-muted-foreground text-xs font-bold flex items-center justify-center">2</span>
               Root Cause Analysis
             </h2>
             <div className="bg-muted/30 border border-border rounded-lg p-5">
@@ -110,7 +110,7 @@ const WBRModal = ({ issue, isOpen, onClose }: WBRModalProps) => {
                 <ul className="space-y-3">
                   {issue.quotes.map((q, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="text-amazon-orange font-bold text-sm mt-0.5">•</span>
+                      <span className="text-muted-foreground font-bold text-sm mt-0.5">•</span>
                       <p className="text-sm text-foreground italic leading-relaxed">"{q}"</p>
                     </li>
                   ))}
