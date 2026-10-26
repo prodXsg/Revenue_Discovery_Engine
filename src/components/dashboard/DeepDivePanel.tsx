@@ -126,7 +126,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 32%, 91%)" />
                     <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
                     <YAxis yAxisId="left" label={{ value: 'Tickets', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
-                    <YAxis yAxisId="right" orientation="right" label={{ value: 'Conversion %', angle: 90, position: 'insideRight' }} domain={[0, 'auto']} tickFormatter={(value) => `${value.toFixed(1)}%`} tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
+                    <YAxis yAxisId="right" orientation="right" label={{ value: 'Conv %', angle: 90, position: 'insideRight' }} domain={[0, 'auto']} tickFormatter={(value) => `${value.toFixed(1)}%`} tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
                     <RechartsTooltip contentStyle={{ fontSize: 12, borderRadius: 4 }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     <Bar yAxisId="left" dataKey="tickets" fill="hsl(33, 100%, 50%)" name="Tickets" radius={[2, 2, 0, 0]} />
