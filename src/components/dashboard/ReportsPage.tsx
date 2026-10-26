@@ -1,9 +1,10 @@
 import { TrendingUp, Calendar, FileBarChart } from "lucide-react";
 import { pastReports, computeYTDAvertedLeakage } from "@/data/sampleData";
+import { formatRevenueIndian } from "@/lib/revenue";
 
 const ReportsPage = () => {
   const ytdLeakage = computeYTDAvertedLeakage();
-  const ytdDisplay = (ytdLeakage / 10000000).toFixed(1) + " Cr";
+  const ytdDisplay = formatRevenueIndian(ytdLeakage);
   return (
     <div className="space-y-6">
       <div>
@@ -18,7 +19,7 @@ const ReportsPage = () => {
         </div>
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Total Averted Revenue Leakage (YTD)</p>
-          <p className="text-3xl font-bold text-foreground tracking-tight mt-1">₹{ytdDisplay}</p>
+          <p className="text-3xl font-bold text-foreground tracking-tight mt-1">{ytdDisplay}</p>
           <p className="text-xs text-success-green font-semibold mt-1">Sample data. 23% improvement vs last quarter.</p>
         </div>
       </div>
@@ -53,7 +54,7 @@ const ReportsPage = () => {
                     {r.week}
                   </td>
                   <td className="px-5 py-3 text-right font-mono text-foreground">{r.risks}</td>
-                  <td className="px-5 py-3 text-right font-mono font-bold text-success-green">{r.averted}</td>
+                  <td className="px-5 py-3 text-right font-mono font-bold text-success-green">{formatRevenueIndian(r.averted)}</td>
                   <td className="px-5 py-3 text-right">
                     <span className="text-xs px-2 py-0.5 rounded bg-success-green/10 text-success-green font-semibold">{r.status}</span>
                   </td>

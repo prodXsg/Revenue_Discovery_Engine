@@ -91,11 +91,11 @@ export const defaultIssues: Issue[] = [
 ];
 
 export const pastReports = [
-  { week: "W10 2026 (Mar 2-8)", risks: 4, averted: "₹1.8 Cr", status: "Resolved" },
-  { week: "W09 2026 (Feb 23-Mar 1)", risks: 3, averted: "₹2.1 Cr", status: "Resolved" },
-  { week: "W08 2026 (Feb 16-22)", risks: 5, averted: "₹1.4 Cr", status: "Resolved" },
-  { week: "W07 2026 (Feb 9-15)", risks: 2, averted: "₹3.2 Cr", status: "Resolved" },
-  { week: "W06 2026 (Feb 2-8)", risks: 6, averted: "₹2.9 Cr", status: "Resolved" },
+  { week: "W10 2026 (Mar 2-8)", risks: 4, averted: 18000000, status: "Resolved" },
+  { week: "W09 2026 (Feb 23-Mar 1)", risks: 3, averted: 21000000, status: "Resolved" },
+  { week: "W08 2026 (Feb 16-22)", risks: 5, averted: 14000000, status: "Resolved" },
+  { week: "W07 2026 (Feb 9-15)", risks: 2, averted: 32000000, status: "Resolved" },
+  { week: "W06 2026 (Feb 2-8)", risks: 6, averted: 29000000, status: "Resolved" },
 ];
 
 export const sampleNotifications = [
@@ -123,5 +123,5 @@ export function computeTotalComplaints(issues: Issue[]): number {
 }
 
 export function computeYTDAvertedLeakage(): number {
-  return 142000000; // 1.42 crores in paise
+  return pastReports.reduce((sum, r) => sum + r.averted, 0);
 }
