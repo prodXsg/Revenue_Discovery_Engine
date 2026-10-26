@@ -1,7 +1,5 @@
 <h1 align="center">Revenue Discovery Engine for Amazon PMs</h1>
 
-<hr>
-
 <p align="center">
   <img src="RDE.png" alt="Revenue Discovery Engine dashboard" width="350">
 </p>
@@ -12,7 +10,7 @@ An AI-powered product discovery tool for Amazon PMs that identifies customer pai
   <a href="https://revenue-discovery.lovable.app">View Live Project</a>
 </p>
 
----
+## The Problem
 
 ## The Problem
 
