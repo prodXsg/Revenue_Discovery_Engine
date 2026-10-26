@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { X, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { track } from "@/lib/events";
 import type { Issue } from "./TriageTable";
 
 interface JiraModalProps {
@@ -23,6 +24,7 @@ const JiraModal = ({ issue, isOpen, onClose }: JiraModalProps) => {
     const draftText = `Summary: ${summary}\n\nBusiness Value: ${businessValue}\n\nDescription:\n${description}`;
 
     navigator.clipboard.writeText(draftText).then(() => {
+      track('insight_accepted', { issueId: issue.id, issueName: issue.name });
       toast.success("Jira draft copied", { description: "Paste into Jira to create the epic." });
       onClose();
     }).catch(() => {

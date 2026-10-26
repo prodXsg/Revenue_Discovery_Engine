@@ -1,9 +1,11 @@
+import { useEffect, useRef } from "react";
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { MessageSquareQuote, Sparkles, Check, VolumeX, Volume2, Info, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatRevenueIndian } from "@/lib/revenue";
+import { track } from "@/lib/events";
 import type { Issue } from "./TriageTable";
 
 interface DeepDivePanelProps {
@@ -38,6 +40,22 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
   const isMuted = issue.status === "Muted";
   const isResolved = issue.status === "Resolved";
 
+  const displayedIssuesRef = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!displayedIssuesRef.current.has(issue.id)) {
+      displayedIssuesRef.current.add(issue.id);
+      track('insight_displayed', { issueId: issue.id, issueName: issue.name });
+    }
+  }, [issue.id, issue.name]);
+
+  const handleTabChange = (tab: string) => {
+    if (tab === "Voice of Customer") {
+      track('evidence_viewed', { issueId: issue.id, issueName: issue.name });
+    }
+    onTabChange(tab);
+  };
+
   return (
     <div className="bg-card rounded border border-border shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-border flex items-center justify-between">
@@ -53,7 +71,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => onTabChange(tab)}
+            onClick={() => handleTabChange(tab)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
               activeTab === tab ? "text-foreground" : "text-muted-foreground hover:text-foreground"
             }`}

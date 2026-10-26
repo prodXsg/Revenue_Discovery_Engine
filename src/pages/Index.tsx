@@ -14,6 +14,7 @@ import IntegrationsPage from "@/components/dashboard/IntegrationsPage";
 import ReportsPage from "@/components/dashboard/ReportsPage";
 import type { Issue } from "@/components/dashboard/TriageTable";
 import { defaultIssues } from "@/data/sampleData";
+import { track } from "@/lib/events";
 
 const formatDetectedDate = () =>
   new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -288,6 +289,7 @@ const Index = () => {
       });
     } else {
       // Mute
+      track('insight_dismissed', { issueId: currentIssue.id, issueName: currentIssue.name });
       setIssues((prev) =>
         prev.map((i) => (i.id === currentIssue.id ? { ...i, status: "Muted", trend: "flat", previousStatus: i.status } : i))
       );
