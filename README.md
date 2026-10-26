@@ -1,10 +1,16 @@
 <h1 align="center">Revenue Discovery Engine for Amazon PMs</h1>
 
+<hr>
+
 <p align="center">
-  <a href="https://revenue-discovery.lovable.app">View Live Project</a>
+  <img src="RDE.png" alt="Revenue Discovery Engine dashboard" width="900">
 </p>
 
 An AI-powered product discovery tool for Amazon PMs that identifies customer pain points, estimates potential revenue at risk, and ranks product opportunities by business impact rather than complaint volume.
+
+<p align="center">
+  <a href="https://revenue-discovery.lovable.app">View Live Project</a>
+</p>
 
 ---
 
