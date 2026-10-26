@@ -25,7 +25,7 @@ const JiraModal = ({ issue, isOpen, onClose }: JiraModalProps) => {
 
     navigator.clipboard.writeText(draftText).then(() => {
       track('insight_accepted', { issueId: issue.id, issueName: issue.name });
-      toast.success("Jira draft copied", { description: "Paste into Jira to create the epic." });
+      toast.success("Jira draft copied", { description: "Paste into Jira to create the draft." });
       onClose();
     }).catch(() => {
       toast.error("Failed to copy", { description: "Try copying manually." });
@@ -47,7 +47,7 @@ const JiraModal = ({ issue, isOpen, onClose }: JiraModalProps) => {
         {/* Body */}
         <div className="px-5 py-4 space-y-4">
           <div className="bg-muted/50 rounded-lg p-4 text-xs text-muted-foreground border border-muted">
-            Copy the information below and create the epic in Jira manually. This is a prototype; automated creation is planned.
+            Copy the information below and create the draft in Jira manually. This is a prototype; automated creation is planned.
           </div>
 
           <div>

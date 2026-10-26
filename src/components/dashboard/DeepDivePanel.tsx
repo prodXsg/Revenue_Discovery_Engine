@@ -208,7 +208,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                     onClick={onCreateJira}
                     className="py-2.5 px-5 rounded bg-squid-ink text-secondary-foreground font-semibold text-sm hover:bg-squid-ink-light transition-colors"
                   >
-                    Generate Jira Epic
+                    Copy Jira Draft
                   </button>
                 </div>
               </div>
