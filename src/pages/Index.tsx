@@ -127,79 +127,104 @@ const Index = () => {
     setIsFetching(true);
     setIsSkeletonVisible(true);
 
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: "fetch_triage" })
-      });
+    const maxRetries = 2;
+    const retryDelays = [1000, 2000];
+    let lastError: Error | null = null;
 
-      if (!response.ok) throw new Error(`API failed with status: ${response.status}`);
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const liveData = await response.json();
-      const rawArray = liveData.ranked_results ? liveData.ranked_results : liveData;
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: "fetch_triage" }),
+          signal: controller.signal,
+        });
 
-      if (!Array.isArray(rawArray)) throw new Error("n8n did not return an array.");
+        clearTimeout(timeoutId);
 
-      // Load existing persisted statuses
-      const existingIssues = loadPersistedIssues() || [];
-      const existingMap = new Map(existingIssues.map((i) => [i.name, i]));
-      const detectedDate = formatDetectedDate();
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 
-      // Sort by revenue risk descending before mapping
-      const sortedArray = [...rawArray].sort((a: any, b: any) =>
-        (b.total_revenue_risk_inr || 0) - (a.total_revenue_risk_inr || 0)
-      );
+        const liveData = await response.json();
+        const rawArray = liveData.ranked_results ? liveData.ranked_results : liveData;
 
-      const formattedIssues: Issue[] = sortedArray.map((item: any, index: number) => {
-        const existing = existingMap.get(item.name);
-        const riskRaw = item.total_revenue_risk_inr || 0;
-        const vol = item.ticket_count || 0;
+        if (!Array.isArray(rawArray)) throw new Error("Response was not a JSON array.");
 
-        const mappedData: Issue = {
-          id: index + 1,
-          name: item.name,
-          risk: `₹${riskRaw.toLocaleString('en-IN')}`,
-          riskRaw,
-          vol,
-          status: "Low",
-          trend: riskRaw === 0 ? "flat" : "up",
-          traffic: "0",
-          drop: "0%",
-          aov: "₹0",
-          quotes: item.quotes || [],
-          rootCause: item.root_cause || "No root cause provided.",
-          chartData: generateDynamicChartData(vol, riskRaw, index + 1),
-          dateDetected: existing?.dateDetected || detectedDate,
-        };
+        // Load existing persisted statuses
+        const existingIssues = loadPersistedIssues() || [];
+        const existingMap = new Map(existingIssues.map((i) => [i.name, i]));
+        const detectedDate = formatDetectedDate();
 
-        // Preserve user-defined statuses (Resolved/Muted) — never auto-assign Muted
-        if (existing && (existing.status === "Resolved" || existing.status === "Muted")) {
-          return { ...mappedData, status: existing.status, previousStatus: existing.previousStatus };
+        // Sort by revenue risk descending before mapping
+        const sortedArray = [...rawArray].sort((a: any, b: any) =>
+          (b.total_revenue_risk_inr || 0) - (a.total_revenue_risk_inr || 0)
+        );
+
+        const formattedIssues: Issue[] = sortedArray.map((item: any, index: number) => {
+          const existing = existingMap.get(item.name);
+          const riskRaw = item.total_revenue_risk_inr || 0;
+          const vol = item.ticket_count || 0;
+
+          const mappedData: Issue = {
+            id: index + 1,
+            name: item.name,
+            risk: `₹${riskRaw.toLocaleString('en-IN')}`,
+            riskRaw,
+            vol,
+            status: "Low",
+            trend: riskRaw === 0 ? "flat" : "up",
+            traffic: "0",
+            drop: "0%",
+            aov: "₹0",
+            quotes: item.quotes || [],
+            rootCause: item.root_cause || "No root cause provided.",
+            chartData: generateDynamicChartData(vol, riskRaw, index + 1),
+            dateDetected: existing?.dateDetected || detectedDate,
+          };
+
+          // Preserve user-defined statuses (Resolved/Muted) - never auto-assign Muted
+          if (existing && (existing.status === "Resolved" || existing.status === "Muted")) {
+            return { ...mappedData, status: existing.status, previousStatus: existing.previousStatus };
+          }
+
+          // Apply automatic triage for active issues
+          if (riskRaw > 0) {
+            mappedData.status = index === 0 ? "Critical" : "High";
+          }
+
+          return mappedData;
+        });
+
+        setIssues(formattedIssues);
+        setIsUsingDemoData(false);
+        if (formattedIssues.length > 0) setSelectedIssue(formattedIssues[0]);
+        setLastUpdated(formatTimestamp());
+        toast.success("Data refreshed successfully", { description: `${formattedIssues.length} issues loaded from n8n.` });
+        setIsFetching(false);
+        setIsSkeletonVisible(false);
+        return;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error("Unknown error");
+
+        // Only retry on network errors, not on HTTP/parsing errors
+        const isNetworkError = lastError.name === "AbortError" || lastError.message.includes("Failed to fetch") || lastError.message.includes("Network");
+
+        if (attempt < maxRetries && isNetworkError) {
+          await new Promise((r) => setTimeout(r, retryDelays[attempt]));
+        } else {
+          break;
         }
-
-        // Apply automatic triage for active issues
-        if (riskRaw > 0) {
-          // Among active (non-preserved) items sorted by risk, assign P0 to rank 0, P1 to rest
-          mappedData.status = index === 0 ? "Critical" : "High";
-        }
-
-        return mappedData;
-      });
-
-      setIssues(formattedIssues);
-      setIsUsingDemoData(false);
-      if (formattedIssues.length > 0) setSelectedIssue(formattedIssues[0]);
-      setLastUpdated(formatTimestamp());
-      toast.success("Data refreshed successfully", { description: `${formattedIssues.length} issues loaded from n8n.` });
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Unknown error";
-      console.error("Connection error details:", error);
-      toast.error("Failed to fetch data", { description: errorMsg });
-    } finally {
-      setIsFetching(false);
-      setIsSkeletonVisible(false);
+      }
     }
+
+    // All retries exhausted or non-retryable error
+    const errorMsg = lastError?.message || "Unknown error";
+    console.error("Fetch failed after retries:", lastError);
+    toast.error("Failed to fetch data", { description: errorMsg });
+    setIsFetching(false);
+    setIsSkeletonVisible(false);
   };
 
   const handleResolve = () => {
