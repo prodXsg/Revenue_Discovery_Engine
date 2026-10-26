@@ -22,6 +22,7 @@ interface TriageTableProps {
   issues: Issue[];
   selectedId: number;
   onSelect: (issue: Issue) => void;
+  totalIssuesCount?: number;
 }
 
 const statusBadge = (status: string) => {
@@ -47,7 +48,15 @@ const statusLabel = (status: string) => {
 };
 
 const rowBg = (status: string, selected: boolean) => {
-  if (selected) return "bg-row-selected border-l-[3px] border-l-amazon-orange font-semibold text-foreground";
+  if (selected) {
+    const selectedMap: Record<string, string> = {
+      Critical: "bg-surface-critical border-l-risk-red",
+      High: "bg-surface-warning border-l-priority-high",
+      Low: "bg-muted border-l-muted-foreground",
+      Muted: "bg-muted border-l-muted-foreground",
+    };
+    return `${selectedMap[status] || "bg-muted border-l-muted-foreground"} border-l-[3px] font-semibold text-foreground`;
+  }
   const map: Record<string, string> = {
     Critical: "bg-surface-critical hover:bg-surface-critical/80",
     High: "bg-surface-warning hover:bg-surface-warning/80",
@@ -57,7 +66,10 @@ const rowBg = (status: string, selected: boolean) => {
   return `border-l-[3px] border-l-transparent ${map[status] || ""}`;
 };
 
-const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
+const TriageTable = ({ issues, selectedId, onSelect, totalIssuesCount = 0 }: TriageTableProps) => {
+  const isNoDataLoaded = totalIssuesCount === 0;
+  const isSearchFiltered = issues.length === 0 && totalIssuesCount > 0;
+
   return (
     <div className="bg-card rounded border border-border shadow-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-border">
@@ -69,8 +81,17 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
           <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
             <SearchX size={24} className="text-muted-foreground" />
           </div>
-          <p className="text-sm font-semibold text-foreground mb-1">No friction themes match your search</p>
-          <p className="text-xs text-muted-foreground">Try adjusting your search query or clearing filters.</p>
+          {isNoDataLoaded ? (
+            <>
+              <p className="text-sm font-semibold text-foreground mb-1">No issues loaded</p>
+              <p className="text-xs text-muted-foreground">Click Fetch New Data to load issues or use sample data.</p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-foreground mb-1">No themes match your search</p>
+              <p className="text-xs text-muted-foreground">Try adjusting your search query or clearing filters.</p>
+            </>
+          )}
         </div>
       ) : (
         <div className="max-h-[400px] overflow-y-auto scrollbar-thin">
@@ -78,10 +99,10 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
             <thead className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm">
               <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
                 <th className="text-center px-5 py-2.5 font-medium">Priority</th>
-                <th className="text-center px-5 py-2.5 font-medium">Theme Name</th>
-                <th className="text-center px-5 py-2.5 font-medium">Tickets</th>
-                <th className="text-center px-5 py-2.5 font-medium text-amazon-orange font-bold">Revenue at Risk</th>
-                <th className="text-center px-5 py-2.5 font-medium">Date Detected</th>
+                <th className="text-left px-5 py-2.5 font-medium">Theme Name</th>
+                <th className="text-right px-5 py-2.5 font-medium">Tickets</th>
+                <th className="text-right px-5 py-2.5 font-medium text-foreground">Revenue at Risk</th>
+                <th className="text-right px-5 py-2.5 font-medium">Date Detected</th>
               </tr>
             </thead>
             <tbody>
@@ -96,12 +117,12 @@ const TriageTable = ({ issues, selectedId, onSelect }: TriageTableProps) => {
                       {statusLabel(issue.status)}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-center text-foreground max-w-xs truncate">{issue.name}</td>
-                  <td className="px-5 py-3 text-center font-mono text-foreground">{issue.vol}</td>
-                  <td className="px-5 py-3 text-center font-mono font-bold text-amazon-orange text-base">
+                  <td className="px-5 py-3 text-left text-foreground max-w-xs truncate">{issue.name}</td>
+                  <td className="px-5 py-3 text-right font-tabular-nums text-foreground">{issue.vol}</td>
+                  <td className="px-5 py-3 text-right font-tabular-nums font-bold text-foreground text-base">
                     {issue.risk}
                   </td>
-                  <td className="px-5 py-3 text-center text-muted-foreground text-xs">
+                  <td className="px-5 py-3 text-right text-muted-foreground text-xs">
                     {issue.dateDetected || "—"}
                   </td>
                 </tr>

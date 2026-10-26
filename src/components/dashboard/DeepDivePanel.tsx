@@ -1,8 +1,11 @@
+import { useEffect, useRef } from "react";
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { MessageSquareQuote, Sparkles, Check, VolumeX, Volume2, Info, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatRevenueIndian } from "@/lib/revenue";
+import { track } from "@/lib/events";
 import type { Issue } from "./TriageTable";
 
 interface DeepDivePanelProps {
@@ -37,6 +40,22 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
   const isMuted = issue.status === "Muted";
   const isResolved = issue.status === "Resolved";
 
+  const displayedIssuesRef = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!displayedIssuesRef.current.has(issue.id)) {
+      displayedIssuesRef.current.add(issue.id);
+      track('insight_displayed', { issueId: issue.id, issueName: issue.name });
+    }
+  }, [issue.id, issue.name]);
+
+  const handleTabChange = (tab: string) => {
+    if (tab === "Voice of Customer") {
+      track('evidence_viewed', { issueId: issue.id, issueName: issue.name });
+    }
+    onTabChange(tab);
+  };
+
   return (
     <div className="bg-card rounded border border-border shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-border flex items-center justify-between">
@@ -52,7 +71,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => onTabChange(tab)}
+            onClick={() => handleTabChange(tab)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
               activeTab === tab ? "text-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
@@ -85,9 +104,9 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
 
                 <p className="text-secondary-foreground text-[13px] leading-relaxed">
                   <span className="text-muted-foreground/70">[</span>Traffic<span className="text-muted-foreground/70">]</span>
-                  <span className="text-amazon-orange mx-1">×</span>
+                  <span className="text-muted-foreground mx-1">×</span>
                   <span className="text-muted-foreground/70">[</span>Conv. Drop %<span className="text-muted-foreground/70">]</span>
-                  <span className="text-amazon-orange mx-1">×</span>
+                  <span className="text-muted-foreground mx-1">×</span>
                   <span className="text-muted-foreground/70">[</span>AOV<span className="text-muted-foreground/70">]</span>
                 </p>
                 <div className="border-t border-squid-ink-light mt-4 pt-4 space-y-1.5 text-xs">
@@ -95,7 +114,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                   <p className="text-muted-foreground/60">Conv Drop: <span className="text-secondary-foreground font-medium">{dropNum}%</span></p>
                   <p className="text-muted-foreground/60">AOV: <span className="text-secondary-foreground font-medium">{issue.aov}</span></p>
                   <p className="text-amazon-orange mt-3 text-sm font-bold">
-                    = {trafficNum.toLocaleString("en-IN")} × {(dropNum / 100).toFixed(4)} × {aovNum.toLocaleString("en-IN")} = ₹{issue.riskRaw.toLocaleString("en-IN")}
+                    = {trafficNum.toLocaleString("en-IN")} × {(dropNum / 100).toFixed(4)} × {aovNum.toLocaleString("en-IN")} = {formatRevenueIndian(issue.riskRaw)}
                   </p>
                 </div>
               </div>
@@ -103,11 +122,11 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Ticket Spike vs Conversion Drop</p>
                 <ResponsiveContainer width="100%" height={220}>
-                  <ComposedChart data={chartData}>
+                  <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 32%, 91%)" />
                     <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
-                    <YAxis yAxisId="left" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
-                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
+                    <YAxis yAxisId="left" label={{ value: 'Tickets', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
+                    <YAxis yAxisId="right" orientation="right" label={{ value: 'Conv %', angle: 90, position: 'insideRight' }} domain={[0, 'auto']} tickFormatter={(value) => `${value.toFixed(1)}%`} tick={{ fontSize: 11 }} stroke="hsl(215, 16%, 47%)" />
                     <RechartsTooltip contentStyle={{ fontSize: 12, borderRadius: 4 }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     <Bar yAxisId="left" dataKey="tickets" fill="hsl(33, 100%, 50%)" name="Tickets" radius={[2, 2, 0, 0]} />
@@ -119,7 +138,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
 
             <div className="bg-background border border-border rounded-lg p-5">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles size={14} className="text-amazon-orange" />
+                <Sparkles size={14} className="text-muted-foreground" />
                 <p className="text-xs font-bold text-foreground uppercase tracking-wide">Discovered Root Cause & Insights</p>
                 <TooltipProvider>
                   <Tooltip>
@@ -189,7 +208,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
                     onClick={onCreateJira}
                     className="py-2.5 px-5 rounded bg-squid-ink text-secondary-foreground font-semibold text-sm hover:bg-squid-ink-light transition-colors"
                   >
-                    Generate Jira Epic
+                    Copy Jira Draft
                   </button>
                 </div>
               </div>
@@ -206,7 +225,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
               issue.quotes.map((q, i) => (
                 <div key={i} className="border border-border rounded-lg p-4 bg-background hover:shadow-sm transition-shadow">
                   <div className="flex items-start gap-3">
-                    <MessageSquareQuote size={16} className="text-amazon-orange mt-0.5 shrink-0" />
+                    <MessageSquareQuote size={16} className="text-muted-foreground mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm text-foreground italic">"{q}"</p>
                       <div className="flex items-center gap-3 mt-3">

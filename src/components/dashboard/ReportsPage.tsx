@@ -1,14 +1,10 @@
 import { TrendingUp, Calendar, FileBarChart } from "lucide-react";
-
-const pastReports = [
-  { week: "W10 2026 (Mar 2–8)", risks: 4, averted: "₹1.8 Cr", status: "Resolved" },
-  { week: "W09 2026 (Feb 23–Mar 1)", risks: 3, averted: "₹2.1 Cr", status: "Resolved" },
-  { week: "W08 2026 (Feb 16–22)", risks: 5, averted: "₹1.4 Cr", status: "Resolved" },
-  { week: "W07 2026 (Feb 9–15)", risks: 2, averted: "₹3.2 Cr", status: "Resolved" },
-  { week: "W06 2026 (Feb 2–8)", risks: 6, averted: "₹2.9 Cr", status: "Resolved" },
-];
+import { pastReports, computeYTDAvertedLeakage } from "@/data/sampleData";
+import { formatRevenueIndian } from "@/lib/revenue";
 
 const ReportsPage = () => {
+  const ytdLeakage = computeYTDAvertedLeakage();
+  const ytdDisplay = formatRevenueIndian(ytdLeakage);
   return (
     <div className="space-y-6">
       <div>
@@ -23,8 +19,8 @@ const ReportsPage = () => {
         </div>
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Total Averted Revenue Leakage (YTD)</p>
-          <p className="text-3xl font-bold text-foreground tracking-tight mt-1">₹14.2 Crores</p>
-          <p className="text-xs text-success-green font-semibold mt-1">↑ 23% improvement vs last quarter</p>
+          <p className="text-3xl font-bold text-foreground tracking-tight mt-1">{ytdDisplay}</p>
+          <p className="text-xs text-success-green font-semibold mt-1">Sample data. 23% improvement vs last quarter.</p>
         </div>
       </div>
 
@@ -34,31 +30,39 @@ const ReportsPage = () => {
           <Calendar size={14} className="text-muted-foreground" />
           <h3 className="text-sm font-bold text-foreground">Past WBR Reports</h3>
         </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
-              <th className="text-left px-5 py-2.5 font-medium">Week</th>
-              <th className="text-right px-5 py-2.5 font-medium">Risks Found</th>
-              <th className="text-right px-5 py-2.5 font-medium">Revenue Averted</th>
-              <th className="text-right px-5 py-2.5 font-medium">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pastReports.map((r) => (
-              <tr key={r.week} className="border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer transition-colors">
-                <td className="px-5 py-3 font-medium text-foreground flex items-center gap-2">
-                  <FileBarChart size={14} className="text-muted-foreground" />
-                  {r.week}
-                </td>
-                <td className="px-5 py-3 text-right font-mono text-foreground">{r.risks}</td>
-                <td className="px-5 py-3 text-right font-mono font-bold text-success-green">{r.averted}</td>
-                <td className="px-5 py-3 text-right">
-                  <span className="text-xs px-2 py-0.5 rounded bg-success-green/10 text-success-green font-semibold">{r.status}</span>
-                </td>
+        {pastReports.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-6">
+            <FileBarChart size={32} className="text-muted-foreground/40 mb-3" />
+            <p className="text-sm font-semibold text-foreground mb-1">No historical reports yet</p>
+            <p className="text-xs text-muted-foreground">Weekly Business Review reports will appear here.</p>
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
+                <th className="text-left px-5 py-2.5 font-medium">Week</th>
+                <th className="text-right px-5 py-2.5 font-medium">Risks Found</th>
+                <th className="text-right px-5 py-2.5 font-medium">Revenue Averted</th>
+                <th className="text-right px-5 py-2.5 font-medium">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pastReports.map((r) => (
+                <tr key={r.week} className="border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer transition-colors">
+                  <td className="px-5 py-3 font-medium text-foreground flex items-center gap-2">
+                    <FileBarChart size={14} className="text-muted-foreground" />
+                    {r.week}
+                  </td>
+                  <td className="px-5 py-3 text-right font-mono text-foreground">{r.risks}</td>
+                  <td className="px-5 py-3 text-right font-mono font-bold text-success-green">{formatRevenueIndian(r.averted)}</td>
+                  <td className="px-5 py-3 text-right">
+                    <span className="text-xs px-2 py-0.5 rounded bg-success-green/10 text-success-green font-semibold">{r.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

@@ -13,6 +13,8 @@ import SettingsPage from "@/components/dashboard/SettingsPage";
 import IntegrationsPage from "@/components/dashboard/IntegrationsPage";
 import ReportsPage from "@/components/dashboard/ReportsPage";
 import type { Issue } from "@/components/dashboard/TriageTable";
+import { defaultIssues } from "@/data/sampleData";
+import { track } from "@/lib/events";
 
 const formatDetectedDate = () =>
   new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -56,44 +58,6 @@ const rebalancePriorities = (allIssues: Issue[]): Issue[] => {
   });
 };
 
-const defaultIssues: Issue[] = [
-  {
-    id: 1, name: "iOS 17 UPI Biometric Freeze & Core App Crashes", risk: "₹54,68,400", riskRaw: 5468400, vol: 24, status: "Critical", trend: "up", traffic: "45,000", drop: "-1.4%", aov: "₹1,200",
-    quotes: ["App crashes when opening cart with 10+ items", "Search results not sorted properly."],
-    rootCause: "App crash when attempting UPI biometric authentication on iOS 17. Biometric SDK incompatibility with iOS 17 security sandbox causing payment flow to freeze and crash. Affects 68% of iOS 17 users attempting UPI payments.",
-    dateDetected: formatDetectedDate(),
-    chartData: [
-      { day: "Mon", tickets: 2, conversion: 3.8 }, { day: "Tue", tickets: 5, conversion: 3.5 },
-      { day: "Wed", tickets: 8, conversion: 3.0 }, { day: "Thu", tickets: 14, conversion: 2.6 },
-      { day: "Fri", tickets: 20, conversion: 2.1 }, { day: "Sat", tickets: 28, conversion: 1.7 },
-      { day: "Sun", tickets: 34, conversion: 1.2 },
-    ],
-  },
-  {
-    id: 2, name: "Order and Payment Issues", risk: "₹44,77,880", riskRaw: 4477880, vol: 13, status: "High", trend: "up", traffic: "32,000", drop: "-1.1%", aov: "₹1,200",
-    quotes: ["Payment failed but charged twice.", "Refund initiated but money not received."],
-    rootCause: "Payment gateway timeout causing double-charge on retry. The retry logic in the payment microservice does not check idempotency keys, leading to duplicate transactions during peak load windows (6–9 PM IST).",
-    dateDetected: formatDetectedDate(),
-    chartData: [
-      { day: "Mon", tickets: 1, conversion: 4.2 }, { day: "Tue", tickets: 2, conversion: 4.0 },
-      { day: "Wed", tickets: 3, conversion: 3.8 }, { day: "Thu", tickets: 5, conversion: 3.5 },
-      { day: "Fri", tickets: 7, conversion: 3.2 }, { day: "Sat", tickets: 10, conversion: 2.9 },
-      { day: "Sun", tickets: 13, conversion: 2.6 },
-    ],
-  },
-  {
-    id: 3, name: "Deprioritized Noise: Design and Visual Issues", risk: "₹0", riskRaw: 0, vol: 35, status: "Low", trend: "flat", traffic: "50,000", drop: "0.0%", aov: "₹500",
-    quotes: ["Homepage colors bilkul bakwas.", "Colors absolutely terrible."],
-    rootCause: "Cosmetic complaints about color scheme and font rendering on low-DPI Android devices. No measurable conversion or revenue impact detected. Classified as noise by the AI triage engine.",
-    dateDetected: formatDetectedDate(),
-    chartData: [
-      { day: "Mon", tickets: 5, conversion: 4.1 }, { day: "Tue", tickets: 5, conversion: 4.1 },
-      { day: "Wed", tickets: 6, conversion: 4.0 }, { day: "Thu", tickets: 5, conversion: 4.1 },
-      { day: "Fri", tickets: 4, conversion: 4.1 }, { day: "Sat", tickets: 5, conversion: 4.0 },
-      { day: "Sun", tickets: 5, conversion: 4.1 },
-    ],
-  },
-];
 
 const formatTimestamp = () => {
   return new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
@@ -108,11 +72,21 @@ const pageVariants = {
 
 const STORAGE_KEY = "discovery-engine-issues";
 
+interface N8nIssueData {
+  name: string;
+  total_revenue_risk_inr: number;
+  ticket_count: number;
+  quotes: string[];
+  root_cause: string;
+}
+
 const loadPersistedIssues = (): Issue[] | null => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
-  } catch {}
+  } catch (err) {
+    console.warn('Failed to load persisted issues:', err);
+  }
   return null;
 };
 
@@ -129,6 +103,7 @@ const Index = () => {
   }, []);
   const [isFetching, setIsFetching] = useState(false);
   const [isSkeletonVisible, setIsSkeletonVisible] = useState(false);
+  const [isUsingDemoData, setIsUsingDemoData] = useState(true);
   const [selectedIssue, setSelectedIssue] = useState<Issue>(() => {
     const persisted = loadPersistedIssues();
     return persisted && persisted.length > 0 ? persisted[0] : defaultIssues[0];
@@ -149,86 +124,118 @@ const Index = () => {
   useEffect(() => {
     const updated = issues.find((i) => i.id === selectedIssue.id);
     if (updated) setSelectedIssue(updated);
-  }, [issues]);
+  }, [issues, selectedIssue.id]);
 
   const handleFetchData = async () => {
+    const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
+
+    if (!webhookUrl) {
+      setIsUsingDemoData(true);
+      toast.info("No webhook configured", { description: "Using sample data. Set VITE_N8N_WEBHOOK_URL to connect to n8n." });
+      return;
+    }
+
     setIsFetching(true);
     setIsSkeletonVisible(true);
 
-    try {
-      const response = await fetch('https://pristine-liane-noncontemplatively.ngrok-free.dev/webhook-test/triage-manual', {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain', 'ngrok-skip-browser-warning': 'true' },
-        body: JSON.stringify({ action: "fetch_triage" })
-      });
+    const maxRetries = 2;
+    const retryDelays = [1000, 2000];
+    let lastError: Error | null = null;
 
-      if (!response.ok) throw new Error(`API failed with status: ${response.status}`);
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const liveData = await response.json();
-      const rawArray = liveData.ranked_results ? liveData.ranked_results : liveData;
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: "fetch_triage" }),
+          signal: controller.signal,
+        });
 
-      if (!Array.isArray(rawArray)) throw new Error("n8n did not return an array.");
+        clearTimeout(timeoutId);
 
-      // Load existing persisted statuses
-      const existingIssues = loadPersistedIssues() || [];
-      const existingMap = new Map(existingIssues.map((i) => [i.name, i]));
-      const detectedDate = formatDetectedDate();
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 
-      // Sort by revenue risk descending before mapping
-      const sortedArray = [...rawArray].sort((a: any, b: any) =>
-        (b.total_revenue_risk_inr || 0) - (a.total_revenue_risk_inr || 0)
-      );
+        const liveData = await response.json();
+        const rawArray = liveData.ranked_results ? liveData.ranked_results : liveData;
 
-      const formattedIssues: Issue[] = sortedArray.map((item: any, index: number) => {
-        const existing = existingMap.get(item.name);
-        const riskRaw = item.total_revenue_risk_inr || 0;
-        const vol = item.ticket_count || 0;
+        if (!Array.isArray(rawArray)) throw new Error("Response was not a JSON array.");
 
-        const mappedData: Issue = {
-          id: index + 1,
-          name: item.name,
-          risk: `₹${riskRaw.toLocaleString('en-IN')}`,
-          riskRaw,
-          vol,
-          status: "Low",
-          trend: riskRaw === 0 ? "flat" : "up",
-          traffic: "0",
-          drop: "0%",
-          aov: "₹0",
-          quotes: item.quotes || [],
-          rootCause: item.root_cause || "No root cause provided.",
-          chartData: generateDynamicChartData(vol, riskRaw, index + 1),
-          dateDetected: existing?.dateDetected || detectedDate,
-        };
+        // Load existing persisted statuses
+        const existingIssues = loadPersistedIssues() || [];
+        const existingMap = new Map(existingIssues.map((i) => [i.name, i]));
+        const detectedDate = formatDetectedDate();
 
-        // Preserve user-defined statuses (Resolved/Muted) — never auto-assign Muted
-        if (existing && (existing.status === "Resolved" || existing.status === "Muted")) {
-          return { ...mappedData, status: existing.status, previousStatus: existing.previousStatus };
+        // Sort by revenue risk descending before mapping
+        const sortedArray = [...(rawArray as N8nIssueData[])].sort((a: N8nIssueData, b: N8nIssueData) =>
+          (b.total_revenue_risk_inr || 0) - (a.total_revenue_risk_inr || 0)
+        );
+
+        const formattedIssues: Issue[] = sortedArray.map((item: N8nIssueData, index: number) => {
+          const existing = existingMap.get(item.name);
+          const riskRaw = item.total_revenue_risk_inr || 0;
+          const vol = item.ticket_count || 0;
+
+          const mappedData: Issue = {
+            id: index + 1,
+            name: item.name,
+            risk: `₹${riskRaw.toLocaleString('en-IN')}`,
+            riskRaw,
+            vol,
+            status: "Low",
+            trend: riskRaw === 0 ? "flat" : "up",
+            traffic: "0",
+            drop: "0%",
+            aov: "₹0",
+            quotes: item.quotes || [],
+            rootCause: item.root_cause || "No root cause provided.",
+            chartData: generateDynamicChartData(vol, riskRaw, index + 1),
+            dateDetected: existing?.dateDetected || detectedDate,
+          };
+
+          // Preserve user-defined statuses (Resolved/Muted) - never auto-assign Muted
+          if (existing && (existing.status === "Resolved" || existing.status === "Muted")) {
+            return { ...mappedData, status: existing.status, previousStatus: existing.previousStatus };
+          }
+
+          // Apply automatic triage for active issues
+          if (riskRaw > 0) {
+            mappedData.status = index === 0 ? "Critical" : "High";
+          }
+
+          return mappedData;
+        });
+
+        setIssues(formattedIssues);
+        setIsUsingDemoData(false);
+        if (formattedIssues.length > 0) setSelectedIssue(formattedIssues[0]);
+        setLastUpdated(formatTimestamp());
+        toast.success("Data refreshed successfully", { description: `${formattedIssues.length} issues loaded from n8n.` });
+        setIsFetching(false);
+        setIsSkeletonVisible(false);
+        return;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error("Unknown error");
+
+        // Only retry on network errors, not on HTTP/parsing errors
+        const isNetworkError = lastError.name === "AbortError" || lastError.message.includes("Failed to fetch") || lastError.message.includes("Network");
+
+        if (attempt < maxRetries && isNetworkError) {
+          await new Promise((r) => setTimeout(r, retryDelays[attempt]));
+        } else {
+          break;
         }
-
-        // Apply automatic triage for active issues
-        if (riskRaw > 0) {
-          // Among active (non-preserved) items sorted by risk, assign P0 to rank 0, P1 to rest
-          mappedData.status = index === 0 ? "Critical" : "High";
-        }
-
-        return mappedData;
-      });
-
-      await new Promise((r) => setTimeout(r, 2000));
-
-      setIssues(formattedIssues);
-      if (formattedIssues.length > 0) setSelectedIssue(formattedIssues[0]);
-      setLastUpdated(formatTimestamp());
-      toast.success("Data refreshed successfully", { description: `${formattedIssues.length} issues loaded from AI triage.` });
-    } catch (error) {
-      console.error("Connection error details:", error);
-      toast.error("Failed to fetch data", { description: "Check console for details." });
-      await new Promise((r) => setTimeout(r, 1500));
-    } finally {
-      setIsFetching(false);
-      setIsSkeletonVisible(false);
+      }
     }
+
+    // All retries exhausted or non-retryable error
+    const errorMsg = lastError?.message || "Unknown error";
+    console.error("Fetch failed after retries:", lastError);
+    toast.error("Failed to fetch data", { description: errorMsg });
+    setIsFetching(false);
+    setIsSkeletonVisible(false);
   };
 
   const handleResolve = () => {
@@ -292,6 +299,7 @@ const Index = () => {
       });
     } else {
       // Mute
+      track('insight_dismissed', { issueId: currentIssue.id, issueName: currentIssue.name });
       setIssues((prev) =>
         prev.map((i) => (i.id === currentIssue.id ? { ...i, status: "Muted", trend: "flat", previousStatus: i.status } : i))
       );
@@ -357,7 +365,7 @@ const Index = () => {
       return (
         <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="space-y-5">
           {sidebarItem === "dashboard" && <KPICards issues={issues} />}
-          <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} />
+          <TriageTable issues={filteredIssues} selectedId={selectedIssue.id} onSelect={setSelectedIssue} totalIssuesCount={issues.length} />
           {filteredIssues.length > 0 && (
             <DeepDivePanel
               key={selectedIssue.id}
@@ -384,7 +392,7 @@ const Index = () => {
       <AppSidebar activeItem={sidebarItem} onItemClick={handleSidebarClick} activeRiskCount={activeCount} mutedNoiseCount={mutedCount} resolvedCount={resolvedCount} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header isFetching={isFetching} onFetch={handleFetchData} searchQuery={searchQuery} onSearchChange={setSearchQuery} lastUpdated={lastUpdated} />
+        <Header isFetching={isFetching} onFetch={handleFetchData} searchQuery={searchQuery} onSearchChange={setSearchQuery} lastUpdated={lastUpdated} isUsingDemoData={isUsingDemoData} />
 
         <main className="flex-1 p-6 overflow-auto">
           <AnimatePresence mode="wait">
