@@ -129,6 +129,7 @@ const Index = () => {
   }, []);
   const [isFetching, setIsFetching] = useState(false);
   const [isSkeletonVisible, setIsSkeletonVisible] = useState(false);
+  const [isUsingDemoData, setIsUsingDemoData] = useState(true);
   const [selectedIssue, setSelectedIssue] = useState<Issue>(() => {
     const persisted = loadPersistedIssues();
     return persisted && persisted.length > 0 ? persisted[0] : defaultIssues[0];
@@ -152,13 +153,21 @@ const Index = () => {
   }, [issues]);
 
   const handleFetchData = async () => {
+    const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
+
+    if (!webhookUrl) {
+      setIsUsingDemoData(true);
+      toast.info("No webhook configured", { description: "Using sample data. Set VITE_N8N_WEBHOOK_URL to connect to n8n." });
+      return;
+    }
+
     setIsFetching(true);
     setIsSkeletonVisible(true);
 
     try {
-      const response = await fetch('https://pristine-liane-noncontemplatively.ngrok-free.dev/webhook-test/triage-manual', {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain', 'ngrok-skip-browser-warning': 'true' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: "fetch_triage" })
       });
 
@@ -215,16 +224,15 @@ const Index = () => {
         return mappedData;
       });
 
-      await new Promise((r) => setTimeout(r, 2000));
-
       setIssues(formattedIssues);
+      setIsUsingDemoData(false);
       if (formattedIssues.length > 0) setSelectedIssue(formattedIssues[0]);
       setLastUpdated(formatTimestamp());
-      toast.success("Data refreshed successfully", { description: `${formattedIssues.length} issues loaded from AI triage.` });
+      toast.success("Data refreshed successfully", { description: `${formattedIssues.length} issues loaded from n8n.` });
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
       console.error("Connection error details:", error);
-      toast.error("Failed to fetch data", { description: "Check console for details." });
-      await new Promise((r) => setTimeout(r, 1500));
+      toast.error("Failed to fetch data", { description: errorMsg });
     } finally {
       setIsFetching(false);
       setIsSkeletonVisible(false);
@@ -384,7 +392,7 @@ const Index = () => {
       <AppSidebar activeItem={sidebarItem} onItemClick={handleSidebarClick} activeRiskCount={activeCount} mutedNoiseCount={mutedCount} resolvedCount={resolvedCount} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header isFetching={isFetching} onFetch={handleFetchData} searchQuery={searchQuery} onSearchChange={setSearchQuery} lastUpdated={lastUpdated} />
+        <Header isFetching={isFetching} onFetch={handleFetchData} searchQuery={searchQuery} onSearchChange={setSearchQuery} lastUpdated={lastUpdated} isUsingDemoData={isUsingDemoData} />
 
         <main className="flex-1 p-6 overflow-auto">
           <AnimatePresence mode="wait">

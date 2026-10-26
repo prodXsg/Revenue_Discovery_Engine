@@ -7,6 +7,7 @@ interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   lastUpdated: string | null;
+  isUsingDemoData: boolean;
 }
 
 const notifications = [
@@ -19,7 +20,7 @@ const notifications = [
   { id: 7, message: "Weekly triage report ready for review", time: "3 hours ago", unread: false },
 ];
 
-const Header = ({ isFetching, onFetch, searchQuery, onSearchChange, lastUpdated }: HeaderProps) => {
+const Header = ({ isFetching, onFetch, searchQuery, onSearchChange, lastUpdated, isUsingDemoData }: HeaderProps) => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [readIds, setReadIds] = useState<Set<number>>(new Set());
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,7 +44,14 @@ const Header = ({ isFetching, onFetch, searchQuery, onSearchChange, lastUpdated 
   return (
     <header className="h-14 bg-card border-b border-border flex items-center justify-between px-6 shrink-0">
       <div>
-        <h2 className="text-base font-bold text-foreground tracking-tight">Revenue Discovery Report</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-base font-bold text-foreground tracking-tight">Revenue Discovery Report</h2>
+          {isUsingDemoData && (
+            <span className="inline-block px-2 py-1 rounded text-xs font-semibold bg-muted text-muted-foreground">
+              Sample data
+            </span>
+          )}
+        </div>
         <p className="text-xs text-muted-foreground">
           {lastUpdated ? `Last Updated: ${lastUpdated}` : "Last sync: 2 mins ago"}
         </p>
