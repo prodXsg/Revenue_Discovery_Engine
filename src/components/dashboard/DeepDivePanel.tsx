@@ -88,7 +88,7 @@ const DeepDivePanel = ({ issue, activeTab, onTabChange, onCreateJira, onExportWB
         {activeTab === "Correlation Overview" ? (
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-5">
-              <div className="bg-terminal-bg rounded-lg p-5 text-sm font-mono">
+              <div className="bg-slate-800 rounded-lg p-5 text-sm font-mono">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
