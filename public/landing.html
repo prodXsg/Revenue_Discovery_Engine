@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Revenue Discovery Engine</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#0F1B2D}a:hover{color:#0F1B2D}
+
+/* Buttons */
+.btn-p{position:relative;overflow:hidden;background:linear-gradient(180deg,#FFB240 0%,#FF9900 100%);box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 6px 16px -6px rgba(255,153,0,.55);transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.btn-p::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-130%);pointer-events:none}
+.btn-p:hover{background:linear-gradient(180deg,#FFA51F 0%,#F08C00 100%);transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 14px 28px -8px rgba(255,153,0,.7)}
+.btn-p:hover::after{transform:translateX(130%);transition:transform .9s ease}
+.btn-p:active{transform:translateY(0) scale(.98);box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 3px 8px -4px rgba(255,153,0,.6)}
+.btn-s{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,color .18s ease;background:rgba(255,255,255,.7);box-shadow:0 0 0 1px #E3E8F0}
+.btn-s:hover{background:#FFFFFF;color:#13315C;transform:translateY(-2px);box-shadow:0 0 0 1px #C9D3E3,0 10px 22px -10px rgba(15,27,45,.3)}
+.btn-s:active{transform:translateY(0) scale(.98);box-shadow:0 0 0 1px #C9D3E3}
+
+/* Nav underline */
+.ul{position:relative}
+.ul::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;border-radius:2px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.ul:hover::after{transform:scaleX(1)}
+
+/* Logo float */
+@keyframes rde-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.float{animation:rde-float 4s ease-in-out infinite}
+
+/* Hero headline fade */
+@keyframes rde-fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.fadein{animation:rde-fadein .7s ease-out both}
+.fadein-2{animation:rde-fadein .7s ease-out .12s both}
+.fadein-3{animation:rde-fadein .7s ease-out .24s both}
+
+/* Section pill dot (scroll-spy) */
+@keyframes rde-dot{0%{box-shadow:0 0 0 0 rgba(255,153,0,.55);transform:scale(1)}40%{transform:scale(1.35)}100%{box-shadow:0 0 0 9px rgba(255,153,0,0);transform:scale(1)}}
+.dot{display:inline-block;width:7px;height:7px;border-radius:99px;background:#1D2B45;transition:background .3s ease}
+.dot.on{background:#FF9900;animation:rde-dot .9s ease-out 1}
+
+/* Reveal on scroll */
+.armed .rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.armed .rv.in{opacity:1;transform:none}
+
+/* Cards */
+.card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 2px 4px rgba(15,27,45,.05),0 24px 48px -16px rgba(15,27,45,.24) !important}
+.itile{transition:transform .22s ease}
+.card:hover .itile{transform:scale(1.05)}
+
+/* Integration tiles */
+.tool{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.tool .logo{transition:transform .22s ease}
+.tool:hover{transform:translateY(-5px);box-shadow:0 20px 40px -18px rgba(15,27,45,.25) !important}
+.tool:hover .logo{transform:scale(1.08)}
+.t-zen:hover{border-color:#0E9384 !important}
+.t-mix:hover{border-color:#2F6FED !important}
+.t-gs:hover{border-color:#16A34A !important}
+.t-jira:hover{border-color:#1D5FD6 !important}
+@keyframes rde-soft{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.96)}}
+.slack:hover .planned{animation:rde-soft 1.6s ease-in-out infinite}
+
+@media (max-width: 760px){.navlinks{display:none !important}.brandname{display:none}}
+@media (max-width: 640px){.btn{width:100%;justify-content:center;box-sizing:border-box}.cta-row{flex-direction:column;align-items:stretch !important}.navcta{padding:0 14px !important;font-size:14px !important;min-height:42px !important}}
+@media (prefers-reduced-motion: reduce){
+*,*::before,*::after{animation:none !important;transition:none !important}
+.armed .rv{opacity:1 !important;transform:none !important}
+.card:hover,.tool:hover,.btn-p:hover,.btn-s:hover{transform:none !important}
+.card:hover .itile,.tool:hover .logo{transform:none !important}
+}
+</style>
+</helmet>
+<div class="{{rootCls}}" style="font-family: 'Inter Tight', system-ui, sans-serif; color: #0F1B2D; background: #FFFFFF; width: 100%; line-height: 1.5">
+
+<!-- NAV (sticky) -->
+<div style="position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.86); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #F1E7DA; padding: 0 clamp(16px, 5vw, 80px)">
+<nav style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 72px">
+<a href="#" style="display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; flex: 1 1 0; min-width: 0; text-decoration: none; color: #0F1B2D">
+<img class="float" src="./assets/20ae169d6b7ef75ef5b384c832ef48c8.png" alt="RDE logo" width="40" height="40" style="width: 40px; height: 40px; border-radius: 10px; display: block">
+<span class="brandname" style="white-space: nowrap">Revenue Discovery Engine</span>
+</a>
+<div class="navlinks" style="display: flex; align-items: center; gap: 32px; font-size: 15px; font-weight: 600">
+<a class="ul" href="#workflow" style="color: #1D2B45; text-decoration: none">Workflow</a>
+<a class="ul" href="#integrations" style="color: #1D2B45; text-decoration: none">Integrations</a>
+<a class="ul" href="#features" style="color: #1D2B45; text-decoration: none">Features</a>
+</div>
+<div style="flex: 1 1 0; display: flex; justify-content: flex-end">
+<a class="btn-p navcta" href="#" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; color: #0F1B2D; border-radius: 999px; font-weight: 700; font-size: 15px; text-decoration: none; white-space: nowrap">View the dashboard</a>
+</div>
+</nav>
+</div>
+
+<!-- 1. HERO -->
+<header style="background: radial-gradient(70% 70% at 50% 0%, #FFE9CC 0%, #FFF5E8 38%, #FFFFFF 78%); padding: clamp(96px, 13vw, 184px) clamp(16px, 5vw, 80px) clamp(104px, 13vw, 184px)">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 28px">
+<span class="fadein" style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid #F3DEC2; box-shadow: 0 1px 3px rgba(194,94,0,.08); border-radius: 999px; padding: 7px 16px 7px 12px; font-size: 14px; font-weight: 600; color: #7A3E00">
+<svg aria-hidden="true" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#C25E00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.6 4.9L14.5 8l-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z"></path></svg>
+AI product discovery
+</span>
+<h1 class="fadein-2" style="margin: 0; font-size: clamp(44px, 7.2vw, 100px); line-height: 1.0; font-weight: 800; letter-spacing: -0.04em; max-width: 1060px; color: #0F1B2D">Find the customer problems that cost the most.</h1>
+<p class="fadein-3" style="margin: 0; font-size: clamp(17px, 1.8vw, 21px); line-height: 1.5; color: #3B4A63; max-width: 620px">Connects customer feedback to revenue impact, so product teams fix what matters first.</p>
+<div class="cta-row fadein-3" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 16px; margin-top: 8px; width: 100%">
+<a class="btn btn-p" href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 30px; color: #0F1B2D; border-radius: 999px; font-weight: 700; font-size: 17px; text-decoration: none">View the dashboard
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg>
+</a>
+<a class="btn btn-s" href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 26px; color: #0F1B2D; border-radius: 999px; font-weight: 600; font-size: 17px; text-decoration: none">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M10 8.5v7l5.5-3.5z"></path></svg>
+Watch the walkthrough
+</a>
+</div>
+</div>
+</header>
+
+<!-- 2. WORKFLOW -->
+<section id="workflow" style="background: #FFFFFF; padding: clamp(80px, 10vw, 136px) clamp(16px, 5vw, 80px)">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div class="rv {{rv.workflow}}" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #1D2B45; background: #F4F7FB; border: 1px solid #DDE4EE; border-radius: 999px; padding: 6px 14px"><span aria-hidden="true" class="{{dot.workflow}}"></span>WORKFLOW</span>
+<h2 style="margin: 0; font-size: clamp(34px, 4.6vw, 56px); line-height: 1.08; font-weight: 800; letter-spacing: -0.03em; max-width: 760px">From raw feedback to a ranked backlog.</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px">
+<div class="rv {{rv.workflow}}" style="transition-delay: 80ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 22px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<span class="itile" style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; background: #E3F5F2; color: #0B6B61; border-radius: 12px; padding: 8px 12px">01</span>
+<h3 style="margin: 6px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em">Ingest</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63; max-width: 230px">Pull in customer complaints and support tickets.</p>
+</div>
+</div>
+<div class="rv {{rv.workflow}}" style="transition-delay: 160ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 22px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<span class="itile" style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; background: #E6ECF6; color: #0F1B2D; border-radius: 12px; padding: 8px 12px">02</span>
+<h3 style="margin: 6px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em">Protect</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63; max-width: 230px">Mask personal data before any model reads the text.</p>
+</div>
+</div>
+<div class="rv {{rv.workflow}}" style="transition-delay: 240ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 22px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<span class="itile" style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; background: #FEF0D7; color: #93470A; border-radius: 12px; padding: 8px 12px">03</span>
+<h3 style="margin: 6px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em">Quantify</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63; max-width: 230px">Calculate revenue at risk in code, never by the model.</p>
+</div>
+</div>
+<div class="rv {{rv.workflow}}" style="transition-delay: 320ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 22px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<span class="itile" style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; background: #FDE8E6; color: #A8261B; border-radius: 12px; padding: 8px 12px">04</span>
+<h3 style="margin: 6px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em">Prioritise</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63; max-width: 230px">Rank problem themes by revenue at risk.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 3. INTEGRATIONS -->
+<section id="integrations" style="background: #FFF8EF; padding: clamp(80px, 10vw, 136px) clamp(16px, 5vw, 80px)">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div class="rv {{rv.integrations}}" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #1D2B45; background: #FFFFFF; border: 1px solid #F1E2CE; border-radius: 999px; padding: 6px 14px"><span aria-hidden="true" class="{{dot.integrations}}"></span>INTEGRATIONS</span>
+<h2 style="margin: 0; font-size: clamp(34px, 4.6vw, 56px); line-height: 1.08; font-weight: 800; letter-spacing: -0.03em; max-width: 820px">Built to plug into the tools PMs already use.</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px">
+<div class="rv {{rv.integrations}}" style="transition-delay: 80ms">
+<div class="tool t-zen" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #EFE6DA; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -16px rgba(15,27,45,.14)">
+<div class="logo" style="width: 52px; height: 52px; border-radius: 15px; background: #E3F5F2; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0E9384" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 16 0"></path><rect x="2.5" y="12" width="4" height="6" rx="1.5"></rect><rect x="17.5" y="12" width="4" height="6" rx="1.5"></rect><path d="M19.5 18v1a2 2 0 0 1-2 2H13"></path></svg>
+</div>
+<div><div style="font-size: 18px; font-weight: 700">Zendesk</div><div style="font-size: 15px; color: #0B6B61">Support tickets</div></div>
+</div>
+</div>
+<div class="rv {{rv.integrations}}" style="transition-delay: 160ms">
+<div class="tool t-mix" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #EFE6DA; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -16px rgba(15,27,45,.14)">
+<div class="logo" style="width: 52px; height: 52px; border-radius: 15px; background: #E7EFFD; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2F6FED" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 15l4-4 3 3 5-6"></path></svg>
+</div>
+<div><div style="font-size: 18px; font-weight: 700">Mixpanel</div><div style="font-size: 15px; color: #1F55C4">Product analytics</div></div>
+</div>
+</div>
+<div class="rv {{rv.integrations}}" style="transition-delay: 240ms">
+<div class="tool t-gs" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #EFE6DA; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -16px rgba(15,27,45,.14)">
+<div class="logo" style="width: 52px; height: 52px; border-radius: 15px; background: #E5F6EA; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2.5"></rect><path d="M3 9h18M3 15h18M9 9v12"></path></svg>
+</div>
+<div><div style="font-size: 18px; font-weight: 700">Google Sheets</div><div style="font-size: 15px; color: #13803C">Data source</div></div>
+</div>
+</div>
+<div class="rv {{rv.integrations}}" style="transition-delay: 320ms">
+<div class="tool t-jira" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #EFE6DA; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -16px rgba(15,27,45,.14)">
+<div class="logo" style="width: 52px; height: 52px; border-radius: 15px; background: #E6EEFC; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1D5FD6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"></path><path d="M9 6v12" stroke-dasharray="2 2"></path></svg>
+</div>
+<div><div style="font-size: 18px; font-weight: 700">Jira</div><div style="font-size: 15px; color: #1A52BA">Backlog handoff</div></div>
+</div>
+</div>
+<div class="rv {{rv.integrations}}" style="transition-delay: 400ms">
+<div class="slack" style="height: 100%; box-sizing: border-box; background: #FFFCF8; border: 1.5px solid #F3E9DC; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+<div style="width: 52px; height: 52px; border-radius: 15px; background: #FCE8EF; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C2185B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path><path d="M9 10h6M9 13.5h4"></path></svg>
+</div>
+<span class="planned" style="display: inline-block; font-size: 12px; font-weight: 600; color: #475467; background: #F2F4F7; border: 1px solid #E4E7EC; border-radius: 999px; padding: 3px 10px">Planned</span>
+</div>
+<div><div style="font-size: 18px; font-weight: 700; color: #3B4A63">Slack</div><div style="font-size: 15px; color: #9D1C4D">Weekly summary</div></div>
+</div>
+</div>
+</div>
+<p class="rv {{rv.integrations}}" style="margin: 0; text-align: center; font-size: 15px; color: #7A3E00; transition-delay: 480ms">Support tickets are imported from Zendesk's JSON export today.</p>
+</div>
+</section>
+
+<!-- 4. FEATURES -->
+<section id="features" style="background: #FFFFFF; padding: clamp(80px, 10vw, 136px) clamp(16px, 5vw, 80px)">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div class="rv {{rv.features}}" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #1D2B45; background: #F4F7FB; border: 1px solid #DDE4EE; border-radius: 999px; padding: 6px 14px"><span aria-hidden="true" class="{{dot.features}}"></span>FEATURES</span>
+<h2 style="margin: 0; font-size: clamp(34px, 4.6vw, 56px); line-height: 1.08; font-weight: 800; letter-spacing: -0.03em; max-width: 860px">Every ranking can be traced back to its source.</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px">
+<div class="rv {{rv.features}}" style="transition-delay: 80ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<div class="itile" style="width: 52px; height: 52px; border-radius: 15px; background: #FFF0DB; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C25E00" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"></path><rect x="5" y="4" width="3.5" height="13" rx="1"></rect><rect x="10.25" y="9" width="3.5" height="8" rx="1"></rect><rect x="15.5" y="13" width="3.5" height="4" rx="1"></rect></svg>
+</div>
+<h3 style="margin: 8px 0 0; font-size: 21px; font-weight: 700; letter-spacing: -0.02em; color: #8A4300">Revenue-ranked triage</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63">Themes sorted by revenue at risk, not volume.</p>
+<div aria-hidden="true" style="margin-top: auto; background: #FFF8EF; border: 1px solid #F6E6D0; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px"><span style="width: 8px; height: 8px; border-radius: 99px; background: #D92D20"></span><div style="height: 7px; width: 90%; background: #F04438; border-radius: 99px"></div></div>
+<div style="display: flex; align-items: center; gap: 10px"><span style="width: 8px; height: 8px; border-radius: 99px; background: #DC6803"></span><div style="height: 7px; width: 56%; background: #F79009; border-radius: 99px"></div></div>
+<div style="display: flex; align-items: center; gap: 10px"><span style="width: 8px; height: 8px; border-radius: 99px; background: #98A2B3"></span><div style="height: 7px; width: 22%; background: #D0D5DD; border-radius: 99px"></div></div>
+</div>
+</div>
+</div>
+<div class="rv {{rv.features}}" style="transition-delay: 160ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<div class="itile" style="width: 52px; height: 52px; border-radius: 15px; background: #E3F5F2; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0E7C70" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H6a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h2M16 4h2a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-2"></path><path d="M9.5 10h5M9.5 14h5"></path></svg>
+</div>
+<h3 style="margin: 8px 0 0; font-size: 21px; font-weight: 700; letter-spacing: -0.02em; color: #0B5E55">Transparent formula</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63">Each figure shows its traffic, conversion drop, and order value inputs.</p>
+</div>
+</div>
+<div class="rv {{rv.features}}" style="transition-delay: 240ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<div class="itile" style="width: 52px; height: 52px; border-radius: 15px; background: #FDE8E6; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C0362C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path><path d="M9 10.5h.01M9 10.5c0 1.5-.5 2.5-1.5 3M14 10.5h.01M14 10.5c0 1.5-.5 2.5-1.5 3"></path></svg>
+</div>
+<h3 style="margin: 8px 0 0; font-size: 21px; font-weight: 700; letter-spacing: -0.02em; color: #9B241A">Customer evidence</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63">Real quotes from the feedback sit beside every theme.</p>
+</div>
+</div>
+<div class="rv {{rv.features}}" style="transition-delay: 320ms">
+<div class="card" style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E3E8F0; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(15,27,45,.04), 0 10px 28px -14px rgba(15,27,45,.16)">
+<div class="itile" style="width: 52px; height: 52px; border-radius: 15px; background: #E6ECF6; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F1B2D" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2.5"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5M12 14.5v2.5"></path></svg>
+</div>
+<h3 style="margin: 8px 0 0; font-size: 21px; font-weight: 700; letter-spacing: -0.02em; color: #0F1B2D">Local AI model</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3B4A63">Theme grouping runs on Llama 3 through Ollama, so text stays on your machine.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 5. JIRA HANDOFF -->
+<section id="backlog" style="background: #FFF8EF; padding: clamp(80px, 10vw, 136px) clamp(16px, 5vw, 80px)">
+<div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 56px; align-items: center">
+<div class="rv {{rv.backlog}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 16px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #1D2B45; background: #FFFFFF; border: 1px solid #F1E2CE; border-radius: 999px; padding: 6px 14px"><span aria-hidden="true" class="{{dot.backlog}}"></span>BACKLOG</span>
+<h2 style="margin: 0; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.08; font-weight: 800; letter-spacing: -0.03em">From insight to a ready-to-paste ticket.</h2>
+<p style="margin: 0; font-size: clamp(17px, 1.6vw, 19px); line-height: 1.5; color: #3B4A63; max-width: 460px">One click copies a structured draft: summary, business value, and description.</p>
+</div>
+<div class="rv {{rv.backlog}}" style="transition-delay: 80ms">
+<div role="img" aria-label="Ticket draft layout with summary, business value and description fields" class="card" style="background: #FFFFFF; border: 1px solid #F1E6D8; border-radius: 24px; padding: clamp(20px, 3vw, 32px); display: flex; flex-direction: column; gap: 22px; box-shadow: 0 2px 4px rgba(15,27,45,.04), 0 24px 48px -20px rgba(15,27,45,.22)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #F1EDE7">
+<div style="display: flex; align-items: center; gap: 12px">
+<div class="itile" style="width: 40px; height: 40px; border-radius: 12px; background: #E6EEFC; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D5FD6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"></path></svg>
+</div>
+<div style="height: 10px; width: 90px; background: #D6E2FA; border-radius: 99px"></div>
+</div>
+<div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: #F4F7FB">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D2B45" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #1A52BA">SUMMARY</div>
+<div style="height: 14px; width: 80%; background: #D6E2FA; border-radius: 99px"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #93470A">BUSINESS VALUE</div>
+<div style="height: 12px; width: 60%; background: #FDE7C2; border-radius: 99px"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #0B6B61">DESCRIPTION</div>
+<div style="height: 10px; width: 100%; background: #D5F0EB; border-radius: 99px"></div>
+<div style="height: 10px; width: 94%; background: #D5F0EB; border-radius: 99px"></div>
+<div style="height: 10px; width: 70%; background: #D5F0EB; border-radius: 99px"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 6. FOOTER -->
+<footer style="background: #0F1B2D; color: #FFFFFF; padding: clamp(48px, 6vw, 72px) clamp(16px, 5vw, 80px)">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 19px">
+<img src="./assets/20ae169d6b7ef75ef5b384c832ef48c8.png" alt="RDE logo" width="44" height="44" style="width: 44px; height: 44px; border-radius: 11px; display: block">
+Revenue Discovery Engine</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px 32px; font-size: 16px; font-weight: 600">
+<a class="ul" href="#" style="display: inline-flex; align-items: center; min-height: 44px; color: #FFFFFF; text-decoration: none">Walkthrough</a>
+<a class="ul" href="#" style="display: inline-flex; align-items: center; min-height: 44px; color: #FFFFFF; text-decoration: none">PRD</a>
+<a class="ul" href="#" style="display: inline-flex; align-items: center; min-height: 44px; color: #FFFFFF; text-decoration: none">GitHub repository</a>
+<a class="ul" href="#" style="display: inline-flex; align-items: center; min-height: 44px; color: #FFFFFF; text-decoration: none">Contact</a>
+</div>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5000}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { on: {}, seen: {}, armed: false };
+}
+componentDidMount() {
+this._t = setTimeout(() => this.observe(), 60);
+}
+componentWillUnmount() {
+clearTimeout(this._t);
+if (this._spy) this._spy.disconnect();
+if (this._rv) this._rv.disconnect();
+}
+observe() {
+const els = Array.prototype.slice.call(document.querySelectorAll('section[id]'));
+if (!els.length || typeof IntersectionObserver === 'undefined') return;
+const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+this._spy = new IntersectionObserver((entries) => {
+const on = Object.assign({}, this.state.on);
+let changed = false;
+entries.forEach((e) => {
+if (on[e.target.id] !== e.isIntersecting) { on[e.target.id] = e.isIntersecting; changed = true; }
+});
+if (changed) this.setState({ on: on });
+}, { rootMargin: '-20% 0px -20% 0px', threshold: 0 });
+els.forEach((el) => this._spy.observe(el));
+if (!reduce) {
+this._rv = new IntersectionObserver((entries) => {
+const seen = Object.assign({}, this.state.seen);
+let changed = false;
+entries.forEach((e) => {
+if (e.isIntersecting && !seen[e.target.id]) { seen[e.target.id] = true; changed = true; this._rv.unobserve(e.target); }
+});
+if (changed) this.setState({ seen: seen });
+}, { rootMargin: '0px 0px -10% 0px', threshold: 0 });
+els.forEach((el) => this._rv.observe(el));
+this.setState({ armed: true });
+}
+}
+renderVals() {
+const ids = ['workflow', 'integrations', 'features', 'backlog'];
+const dot = {};
+const rv = {};
+ids.forEach((id) => {
+dot[id] = this.state.on[id] ? 'dot on' : 'dot';
+rv[id] = this.state.seen[id] ? 'in' : '';
+});
+return { dot: dot, rv: rv, rootCls: this.state.armed ? 'page armed' : 'page' };
+}
+}
+</script>
+</body>
+</html>
